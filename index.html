@@ -8,27 +8,29 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:#1a2035;color:#e0e0e0;font-family:sans-serif;overflow:hidden;touch-action:none;}
-#ui{position:fixed;top:0;left:0;right:0;height:50px;background:#1e2d50;border-bottom:2px solid #3a6abf;display:flex;align-items:center;padding:0 12px;gap:12px;z-index:10;}
-.stat{font-size:13px;color:#90c8f0;white-space:nowrap;}.stat span{color:#fff;font-weight:bold;}
-#wave-btn,#pause-btn{border-radius:6px;padding:5px 10px;cursor:pointer;font-size:12px;border:1px solid;}
+#ui{position:fixed;top:0;left:0;right:0;height:50px;background:#1e2d50;border-bottom:2px solid #3a6abf;display:flex;align-items:center;padding:0 8px;gap:6px;z-index:10;flex-wrap:nowrap;overflow:hidden;}
+.stat{font-size:13px;color:#90c8f0;white-space:nowrap;flex-shrink:1;min-width:0;}.stat span{color:#fff;font-weight:bold;}
+#wave-btn,#pause-btn{border-radius:6px;padding:5px 8px;cursor:pointer;font-size:11px;border:1px solid;white-space:nowrap;flex-shrink:0;}
 #wave-btn{margin-left:auto;background:#2a5abf;border-color:#5a9aff;color:#c0e0ff;}
 #wave-btn:hover{background:#5a9aff;color:#fff;}
 #pause-btn{background:#2a4a80;border-color:#4a7abf;color:#90c8f0;}
 #pause-btn:disabled{opacity:0.4;cursor:default;}
+#sound-btn{flex-shrink:0;}
 #panel{position:fixed;bottom:0;left:0;right:0;background:#1e2d50;border-top:2px solid #3a6abf;display:flex;align-items:center;justify-content:center;gap:6px;z-index:10;padding:6px;}
 .tbtn{background:#243560;border:2px solid #3a5a9a;border-radius:8px;padding:4px 6px;cursor:pointer;text-align:center;min-width:72px;-webkit-tap-highlight-color:transparent;}
 .tbtn:hover,.tbtn.sel{border-color:#5aadff;background:#1a4080;}
 .tbtn .ico{font-size:18px;}.tbtn .nm{font-size:9px;color:#90b8e0;}.tbtn .ct{font-size:9px;color:#ffd700;font-weight:bold;}.tbtn .pw{font-size:8px;margin-top:1px;color:#8ab;}
 /* 모바일 스타일 */
 @media(max-width:600px){
-  #ui{height:44px;padding:0 8px;gap:8px;}
-  .stat{font-size:11px;}
-  #wave-btn,#pause-btn{font-size:11px;padding:4px 8px;}
-  #panel{gap:4px;padding:4px;}
-  .tbtn{min-width:60px;padding:3px 4px;}
-  .tbtn .ico{font-size:16px;}
-  .tbtn .nm{font-size:8px;}
-  .tbtn .ct{font-size:8px;}
+  #ui{height:44px;padding:0 5px;gap:4px;}
+  .stat{font-size:10px;}
+  #wave-btn,#pause-btn{font-size:10px;padding:3px 6px;}
+  #sound-btn{font-size:11px;padding:3px 5px;}
+  #panel{gap:3px;padding:3px;}
+  .tbtn{min-width:55px;padding:2px 3px;}
+  .tbtn .ico{font-size:15px;}
+  .tbtn .nm{font-size:7px;}
+  .tbtn .ct{font-size:7px;}
 }
 #vbtn{border-color:#16a34a;min-width:78px;}
 #vbtn.ready{border-color:#4ade80;animation:vP 1s infinite alternate;}
@@ -55,7 +57,13 @@ body{background:#1a2035;color:#e0e0e0;font-family:sans-serif;overflow:hidden;tou
 #hint{position:fixed;bottom:96px;left:0;right:0;text-align:center;font-size:12px;color:#6090b8;pointer-events:none;z-index:5;}
 #pause-overlay{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(10,20,50,0.93);border:2px solid #5aadff;border-radius:14px;padding:30px 50px;text-align:center;z-index:15;font-size:22px;font-weight:bold;color:#c0e0ff;cursor:pointer;}
 #rbanner{display:none;position:fixed;top:50px;left:0;right:0;bottom:90px;align-items:center;justify-content:center;font-size:80px;font-weight:900;color:#fff;text-shadow:0 0 30px #5aadff;pointer-events:none;z-index:18;text-align:center;line-height:1.2;}
-#evbanner{display:none;position:fixed;top:0;left:50%;transform:translateX(-50%);height:50px;line-height:50px;padding:0 20px;z-index:16;font-size:13px;font-weight:bold;color:#ffd700;text-align:center;pointer-events:none;white-space:nowrap;}
+#evbanner{display:none;position:fixed;top:50px;left:0;right:0;height:36px;line-height:36px;padding:0 10px;z-index:16;font-size:12px;font-weight:bold;color:#ffd700;text-align:center;pointer-events:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:rgba(10,20,50,0.7);}
+@media(max-width:600px){
+  #rbanner{font-size:36px;top:44px;}
+  #evbanner{top:44px;font-size:11px;height:30px;line-height:30px;}
+  #preview{top:78px;font-size:11px;padding:5px 10px;white-space:normal;text-align:center;max-width:90vw;}
+  #pause-overlay{padding:20px 30px;font-size:16px;}
+}
 #preview{display:none;position:fixed;top:56px;left:50%;transform:translateX(-50%);background:rgba(10,20,50,0.96);border:2px solid #3a6abf;border-radius:10px;padding:8px 18px;z-index:17;font-size:13px;color:#c0e0ff;text-align:center;pointer-events:none;white-space:nowrap;}
 #evo-popup{display:none;position:fixed;z-index:25;background:#1a2a4a;border:2px solid #5aadff;border-radius:12px;padding:14px 18px;min-width:220px;pointer-events:all;}
 #evo-popup h3{font-size:14px;color:#fff;margin-bottom:6px;text-align:center;}
@@ -207,6 +215,9 @@ var cx=cv.getContext('2d');
 function getPanelH(){return document.getElementById('panel').offsetHeight||90;}
 function getUIH(){return document.getElementById('ui').offsetHeight||50;}
 var W=window.innerWidth,H=window.innerHeight-getUIH()-getPanelH(),PATH=[];
+// 모바일 스케일 팩터 (600px 이하면 0.65)
+function isMobile(){return window.innerWidth<=600;}
+function scl(){return isMobile()?0.65:1.0;}
 
 // ── 랜덤 맵 패턴 (게임 시작 시 1개 선택) ──
 var currentMapIdx=0;
@@ -472,12 +483,13 @@ function doEvolve(){
   var cost=EVOLVE_COST[selectedTower.lvl];
   if(money<cost){hint('예산 부족!');return;}
   if(selectedTower.lvl===2&&gBuilt>=5){hint('구청은 최대 5개!');return;}
-  // 구청 진화 시 다른 구청과 최소 거리 체크 (150px)
+  // 구청 진화 시 다른 구청과 최소 거리 체크
   if(selectedTower.lvl===2){
+    var minDist=Math.round(300*scl());
     for(var i=0;i<towers.length;i++){
       if(towers[i]!==selectedTower&&towers[i].lvl===3){
-        if(Math.hypot(towers[i].x-selectedTower.x,towers[i].y-selectedTower.y)<300){
-          hint('🏛️ 구청끼리는 300px 이상 떨어져야 합니다! 더 멀리 배치하세요!');
+        if(Math.hypot(towers[i].x-selectedTower.x,towers[i].y-selectedTower.y)<minDist){
+          hint('🏛️ 구청끼리는 '+minDist+'px 이상 떨어져야 합니다! 더 멀리 배치하세요!');
           return;
         }
       }
@@ -485,7 +497,7 @@ function doEvolve(){
   }
   if(selectedTower.lvl>=1){
     var nextName=selectedTower.lvl===1?'사업소':'구청';
-    if(nearPath(selectedTower.x,selectedTower.y,130)){
+    if(nearPath(selectedTower.x,selectedTower.y,Math.round(130*scl()))){
       hintWarn('⚠️ 경로와 너무 가깝습니다! '+nextName+'는 진상몬스터·시의원 표적이 될 수 있어요!');
     }
   }
@@ -571,7 +583,7 @@ function calcSynergies(){
   for(var i=0;i<towers.length;i++){
     for(var j=i+1;j<towers.length;j++){
       var dist=Math.hypot(towers[i].x-towers[j].x,towers[i].y-towers[j].y);
-      if(dist>150)continue;
+      if(dist>Math.round(150*scl()))continue;
       var a=towers[i],b=towers[j];
       // 사업소+구청 → 구청 공격력 +50%
       if((a.lvl===2&&b.lvl===3)||(a.lvl===3&&b.lvl===2)){
@@ -648,19 +660,19 @@ cv.addEventListener('click',function(e){
   var r=cv.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;
   if(!sellMode){
     for(var i=0;i<towers.length;i++){
-      if(Math.hypot(towers[i].x-mx,towers[i].y-my)<26){openEvoPopup(towers[i],e.clientX,e.clientY);return;}
+      if(Math.hypot(towers[i].x-mx,towers[i].y-my)<Math.round(26*scl()+10)){openEvoPopup(towers[i],e.clientX,e.clientY);return;}
     }
   }
   if(sellMode){
     var f=null;
-    for(var i=0;i<towers.length;i++)if(Math.hypot(towers[i].x-mx,towers[i].y-my)<26){f=towers[i];break;}
+    for(var i=0;i<towers.length;i++)if(Math.hypot(towers[i].x-mx,towers[i].y-my)<Math.round(26*scl()+10)){f=towers[i];break;}
     if(f){money+=Math.floor(getTotalCost(f.lvl)*0.6);if(f.lvl===3)gBuilt--;towers.splice(towers.indexOf(f),1);upd();}
     return;
   }
   if(selTower!==0)return;
   if(nearPath(mx,my)){hint('경로 위에는 설치 불가!');return;}
   var ov=false;
-  for(var i=0;i<towers.length;i++)if(Math.hypot(towers[i].x-mx,towers[i].y-my)<40){ov=true;break;}
+  for(var i=0;i<towers.length;i++)if(Math.hypot(towers[i].x-mx,towers[i].y-my)<Math.round(40*scl())){ov=true;break;}
   if(ov){hint('이미 타워가 있어요!');return;}
   if(money<50){hint('예산 부족!');return;}
   money-=50;
@@ -676,7 +688,7 @@ function ptAt(t){
   return{x:PATH[PATH.length-1].x,y:PATH[PATH.length-1].y};
 }
 function nearPath(x,y,r){
-  r=r||44;
+  r=r||(44*scl());
   for(var i=1;i<PATH.length;i++){
     var ax=PATH[i-1].x,ay=PATH[i-1].y,bx=PATH[i].x,by=PATH[i].y,dx=bx-ax,dy=by-ay,l=dx*dx+dy*dy;
     var t=l?Math.max(0,Math.min(1,((x-ax)*dx+(y-ay)*dy)/l)):0;
@@ -774,7 +786,7 @@ function previewNextWave(){
 }
 function spawnOne(type){
   var d=EDEFS[type],h=d.hp*(1+wave*0.30)*evHpMul;
-  enemies.push({t:0,x:PATH[0].x,y:PATH[0].y,hp:h,maxHp:h,spd:d.spd*spdMul(wave),slow:0,rw:d.rw,dmg:d.dmg,col:d.col,sz:d.sz,ico:d.ico,tag:d.tag,destroyCooldown:0});
+  enemies.push({t:0,x:PATH[0].x,y:PATH[0].y,hp:h,maxHp:h,spd:d.spd*spdMul(wave),slow:0,rw:d.rw,dmg:d.dmg,col:d.col,sz:Math.round(d.sz*scl()),ico:d.ico,tag:d.tag,destroyCooldown:0});
 }
 function killE(e){
   score+=e.rw;money+=e.rw;statKills++;statCurCombo++;
@@ -914,14 +926,15 @@ function drawBG(){
   for(var y=0;y<H;y+=40){cx.beginPath();cx.moveTo(0,y);cx.lineTo(W,y);cx.stroke();}
 }
 function drawRoad(){
+  var rw=Math.round(70*scl()),rw2=Math.round(62*scl());
   cx.lineCap='round';cx.lineJoin='round';
-  cx.strokeStyle='#1e3a6a';cx.lineWidth=70;cx.beginPath();cx.moveTo(PATH[0].x,PATH[0].y);for(var i=1;i<PATH.length;i++)cx.lineTo(PATH[i].x,PATH[i].y);cx.stroke();
-  cx.strokeStyle='#2e5090';cx.lineWidth=62;cx.beginPath();cx.moveTo(PATH[0].x,PATH[0].y);for(var i=1;i<PATH.length;i++)cx.lineTo(PATH[i].x,PATH[i].y);cx.stroke();
+  cx.strokeStyle='#1e3a6a';cx.lineWidth=rw;cx.beginPath();cx.moveTo(PATH[0].x,PATH[0].y);for(var i=1;i<PATH.length;i++)cx.lineTo(PATH[i].x,PATH[i].y);cx.stroke();
+  cx.strokeStyle='#2e5090';cx.lineWidth=rw2;cx.beginPath();cx.moveTo(PATH[0].x,PATH[0].y);for(var i=1;i<PATH.length;i++)cx.lineTo(PATH[i].x,PATH[i].y);cx.stroke();
   cx.strokeStyle='rgba(140,200,255,0.28)';cx.lineWidth=4;cx.setLineDash([20,16]);cx.beginPath();cx.moveTo(PATH[0].x,PATH[0].y);for(var i=1;i<PATH.length;i++)cx.lineTo(PATH[i].x,PATH[i].y);cx.stroke();cx.setLineDash([]);
   var g=PATH[PATH.length-1];
-  cx.font='38px serif';cx.textAlign='center';cx.textBaseline='middle';cx.fillText('🏛️',g.x,g.y);
-  cx.font='bold 13px sans-serif';cx.fillStyle='#ffdd88';cx.textBaseline='top';cx.fillText('창원시청',g.x,g.y+22);
-  var pct=Math.max(0,hp/MAX_HP),bw=90,bh=13,bx=g.x-45,by=g.y-54;
+  cx.font=Math.round(38*scl())+'px serif';cx.textAlign='center';cx.textBaseline='middle';cx.fillText('🏛️',g.x,g.y);
+  cx.font='bold '+Math.round(13*scl())+'px sans-serif';cx.fillStyle='#ffdd88';cx.textBaseline='top';cx.fillText('창원시청',g.x,g.y+Math.round(22*scl()));
+  var pct=Math.max(0,hp/MAX_HP),bw=Math.round(90*scl()),bh=Math.round(13*scl()),bx=g.x-bw/2,by=g.y-Math.round(54*scl());
   cx.fillStyle='rgba(10,20,50,0.85)';cx.strokeStyle='#5a8abf';cx.lineWidth=1.5;cx.beginPath();cx.roundRect(bx-2,by-2,bw+4,bh+4,4);cx.fill();cx.stroke();
   cx.fillStyle='#1a2a44';cx.fillRect(bx,by,bw,bh);
   var bc=pct>0.6?'#4ade80':pct>0.3?'#fbbf24':'#f87171';
@@ -943,14 +956,14 @@ function drawRangePrev(){
 }
 function drawTower(t){
   var tl=TLEVELS[t.lvl];
-  var sz=20+t.lvl*4;
+  var sz=Math.round((20+t.lvl*4)*scl());
   cx.shadowColor=tl.col;cx.shadowBlur=10+t.lvl*8;cx.fillStyle=tl.col+'55';
   cx.beginPath();cx.arc(t.x,t.y,sz,0,Math.PI*2);cx.fill();
   cx.strokeStyle=tl.col;cx.lineWidth=2+t.lvl;
   cx.beginPath();cx.arc(t.x,t.y,sz,0,Math.PI*2);cx.stroke();
   if(t.lvl===2){
     cx.strokeStyle=tl.col+'44';cx.lineWidth=1;
-    cx.beginPath();cx.arc(t.x,t.y,tl.range,0,Math.PI*2);cx.stroke();
+    cx.beginPath();cx.arc(t.x,t.y,tl.range*scl(),0,Math.PI*2);cx.stroke();
   }
   if(t.debuffed){cx.shadowBlur=0;cx.strokeStyle='#ff4444';cx.lineWidth=2;cx.beginPath();cx.arc(t.x,t.y,sz+5,0,Math.PI*2);cx.stroke();cx.font='10px sans-serif';cx.fillStyle='#ff4444';cx.textAlign='center';cx.textBaseline='top';cx.fillText('⚡감속',t.x,t.y+sz+2);}
   if(t.paralyzed>0){cx.shadowBlur=0;cx.strokeStyle='#86efac';cx.lineWidth=3;cx.beginPath();cx.arc(t.x,t.y,sz+6,0,Math.PI*2);cx.stroke();cx.font='10px sans-serif';cx.fillStyle='#86efac';cx.textAlign='center';cx.textBaseline='top';cx.fillText('💤마비',t.x,t.y+sz+2);}
@@ -1053,24 +1066,24 @@ function loop(ts){
     if(e.slow>0)e.slow-=dt;
     for(var j=0;j<towers.length;j++){if(towers[j].lvl===2&&Math.hypot(towers[j].x-e.x,towers[j].y-e.y)<=TLEVELS[2].range)e.slow=Math.max(e.slow,60);}
     if(e.ico==='😡'){var cl=null,cd2=100;for(var j=0;j<towers.length;j++){var d2=Math.hypot(towers[j].x-e.x,towers[j].y-e.y);if(d2<cd2){cd2=d2;cl=towers[j];}}if(cl)cl.debuffed=true;}
-    if(e.ico==='👿'){e.destroyCooldown-=dt;if(e.destroyCooldown<=0){var hit=false;for(var j=towers.length-1;j>=0;j--){if(towers[j].lvl===3)continue;if(Math.hypot(towers[j].x-e.x,towers[j].y-e.y)<90&&Math.random()<0.20){towers[j].hp--;boom(towers[j].x,towers[j].y,'#ff4444',4);if(towers[j].hp<=0){destroyTower(towers[j]);}e.destroyCooldown=300;hit=true;break;}}if(!hit)e.destroyCooldown=60;}}
-    if(e.ico==='🎩'){e.destroyCooldown-=dt;if(e.destroyCooldown<=0){var ex=null,mc=0;for(var j=0;j<towers.length;j++){if(towers[j].lvl===3)continue;if(Math.hypot(towers[j].x-e.x,towers[j].y-e.y)<130&&!towers[j].bossHit&&getTotalCost(towers[j].lvl)>mc){mc=getTotalCost(towers[j].lvl);ex=towers[j];}}if(ex){ex.bossHit=true;ex.hp--;boom(ex.x,ex.y,'#ff4444',4);if(ex.hp<=0){destroyTower(ex);}e.destroyCooldown=180;}else e.destroyCooldown=180;}}
+    if(e.ico==='👿'){e.destroyCooldown-=dt;if(e.destroyCooldown<=0){var hit=false;for(var j=towers.length-1;j>=0;j--){if(towers[j].lvl===3)continue;if(Math.hypot(towers[j].x-e.x,towers[j].y-e.y)<Math.round(90*scl())&&Math.random()<0.20){towers[j].hp--;boom(towers[j].x,towers[j].y,'#ff4444',4);if(towers[j].hp<=0){destroyTower(towers[j]);}e.destroyCooldown=300;hit=true;break;}}if(!hit)e.destroyCooldown=60;}}
+    if(e.ico==='🎩'){e.destroyCooldown-=dt;if(e.destroyCooldown<=0){var ex=null,mc=0;for(var j=0;j<towers.length;j++){if(towers[j].lvl===3)continue;if(Math.hypot(towers[j].x-e.x,towers[j].y-e.y)<Math.round(130*scl())&&!towers[j].bossHit&&getTotalCost(towers[j].lvl)>mc){mc=getTotalCost(towers[j].lvl);ex=towers[j];}}if(ex){ex.bossHit=true;ex.hp--;boom(ex.x,ex.y,'#ff4444',4);if(ex.hp<=0){destroyTower(ex);}e.destroyCooldown=180;}else e.destroyCooldown=180;}}
     // 🪑 자생단체: 범위 내 타워 광역 마비 (paralyzed)
     if(e.tag&&e.tag.indexOf('자생단체')>=0){
       e.destroyCooldown-=dt;
       // 쿨타임 중 충전 표시 (범위 내 타워 있을 때)
       var nearTower=false;
-      for(var j=0;j<towers.length;j++){if(Math.hypot(towers[j].x-e.x,towers[j].y-e.y)<110){nearTower=true;break;}}
+      for(var j=0;j<towers.length;j++){if(Math.hypot(towers[j].x-e.x,towers[j].y-e.y)<Math.round(110*scl())){nearTower=true;break;}}
       if(nearTower&&e.destroyCooldown>0){
         // 충전 중 - 초록 점선 링
         cx.save();cx.strokeStyle='rgba(134,239,172,'+Math.abs(Math.sin(e.destroyCooldown*0.2))*0.7+')';
         cx.lineWidth=2;cx.setLineDash([4,4]);
-        cx.beginPath();cx.arc(e.x,e.y,110,0,Math.PI*2);cx.stroke();
+        cx.beginPath();cx.arc(e.x,e.y,Math.round(110*scl()),0,Math.PI*2);cx.stroke();
         cx.setLineDash([]);cx.restore();
       }
       if(e.destroyCooldown<=0){
         for(var j=0;j<towers.length;j++){
-          if(Math.hypot(towers[j].x-e.x,towers[j].y-e.y)<110){
+          if(Math.hypot(towers[j].x-e.x,towers[j].y-e.y)<Math.round(110*scl())){
             towers[j].paralyzed=90;
             // 마비 발동 이펙트 - 번개
             boom(towers[j].x,towers[j].y,'#86efac',8);
@@ -1084,12 +1097,12 @@ function loop(ts){
       }
     }
     // 🔴 빨간의원: 진상몬스터처럼 타워 철거 (HP 차감) + 구청 취약
-    if(e.red&&!e.gold){e.destroyCooldown-=dt;if(e.destroyCooldown<=0){var hit=false;for(var j=towers.length-1;j>=0;j--){if(towers[j].lvl===3)continue;if(Math.hypot(towers[j].x-e.x,towers[j].y-e.y)<110&&Math.random()<0.30){towers[j].hp--;boom(towers[j].x,towers[j].y,'#ef4444',5);if(towers[j].hp<=0)destroyTower(towers[j]);e.destroyCooldown=240;hit=true;break;}}if(!hit)e.destroyCooldown=60;}}
+    if(e.red&&!e.gold){e.destroyCooldown-=dt;if(e.destroyCooldown<=0){var hit=false;for(var j=towers.length-1;j>=0;j--){if(towers[j].lvl===3)continue;if(Math.hypot(towers[j].x-e.x,towers[j].y-e.y)<Math.round(110*scl())&&Math.random()<0.30){towers[j].hp--;boom(towers[j].x,towers[j].y,'#ef4444',5);if(towers[j].hp<=0)destroyTower(towers[j]);e.destroyCooldown=240;hit=true;break;}}if(!hit)e.destroyCooldown=60;}}
     // 🔵 파란의원: 주변 적 속도 버프 + 시각적 표시
     if(e.blue){
       var buffed=false;
       for(var j=0;j<enemies.length;j++){
-        if(enemies[j]!==e&&Math.hypot(enemies[j].x-e.x,enemies[j].y-e.y)<120){
+        if(enemies[j]!==e&&Math.hypot(enemies[j].x-e.x,enemies[j].y-e.y)<Math.round(120*scl())){
           enemies[j].blueBuff=60;buffed=true;
         }
       }
@@ -1097,12 +1110,12 @@ function loop(ts){
         // 파란 버프 링 표시
         cx.save();
         cx.strokeStyle='rgba(96,165,250,0.5)';cx.lineWidth=2;
-        cx.beginPath();cx.arc(e.x,e.y,120,0,Math.PI*2);cx.stroke();
+        cx.beginPath();cx.arc(e.x,e.y,Math.round(120*scl()),0,Math.PI*2);cx.stroke();
         // 버프 받은 적들에게 파란 화살표 이펙트
         cx.strokeStyle='rgba(96,165,250,0.8)';cx.lineWidth=1.5;
         cx.setLineDash([3,3]);
         for(var j=0;j<enemies.length;j++){
-          if(enemies[j]!==e&&enemies[j].blueBuff>0&&Math.hypot(enemies[j].x-e.x,enemies[j].y-e.y)<120){
+          if(enemies[j]!==e&&enemies[j].blueBuff>0&&Math.hypot(enemies[j].x-e.x,enemies[j].y-e.y)<Math.round(120*scl())){
             cx.beginPath();cx.moveTo(e.x,e.y);cx.lineTo(enemies[j].x,enemies[j].y);cx.stroke();
           }
         }
@@ -1118,7 +1131,7 @@ function loop(ts){
     if(t.paralyzed>0){t.paralyzed-=dt;drawTower(t);continue;} // 자생단체 마비 중
     t.cd=Math.max(0,t.cd-dt);drawTower(t);if(t.cd>0)continue;
     var tl=TLEVELS[t.lvl],tgt=null,best=-1;
-    for(var j=0;j<enemies.length;j++)if(Math.hypot(enemies[j].x-t.x,enemies[j].y-t.y)<=tl.range&&enemies[j].t>best){best=enemies[j].t;tgt=enemies[j];}
+    for(var j=0;j<enemies.length;j++)if(Math.hypot(enemies[j].x-t.x,enemies[j].y-t.y)<=tl.range*scl()&&enemies[j].t>best){best=enemies[j].t;tgt=enemies[j];}
     if(!tgt)continue;
     t.cd=tl.rate*(t.rateSyn||1)*rb*(t.debuffed?1.4:1)*(evFestival?2.0:1);
     var dmgMul=db*(t.dmgSyn||1);
