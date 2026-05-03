@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#1a2035;color:#e0e0e0;font-family:sans-serif;overflow:hidden;touch-action:none;}
+#ui{position:fixed;top:0;left:0;right:0;height:50px;background:#1e2d50;border-bottom:2px solid #3a6abf;display:flex;align-items:center;padding:0 12px;gap:12px;z-index:10;}
+.stat{font-size:13px;color:#90c8f0;white-space:nowrap;}.stat span{color:#fff;font-weight:bold;}
+#wave-btn,#pause-btn{border-radius:6px;padding:5px 10px;cursor:pointer;font-size:12px;border:1px solid;}
+#wave-btn{margin-left:auto;background:#2a5abf;border-color:#5a9aff;color:#c0e0ff;}
+#wave-btn:hover{background:#5a9aff;color:#fff;}
+#pause-btn{background:#2a4a80;border-color:#4a7abf;color:#90c8f0;}
+#pause-btn:disabled{opacity:0.4;cursor:default;}
+#panel{position:fixed;bottom:0;left:0;right:0;background:#1e2d50;border-top:2px solid #3a6abf;display:flex;align-items:center;justify-content:center;gap:6px;z-index:10;padding:6px;}
+.tbtn{background:#243560;border:2px solid #3a5a9a;border-radius:8px;padding:4px 6px;cursor:pointer;text-align:center;min-width:72px;-webkit-tap-highlight-color:transparent;}
+.tbtn:hover,.tbtn.sel{border-color:#5aadff;background:#1a4080;}
+.tbtn .ico{font-size:18px;}.tbtn .nm{font-size:9px;color:#90b8e0;}.tbtn .ct{font-size:9px;color:#ffd700;font-weight:bold;}.tbtn .pw{font-size:8px;margin-top:1px;color:#8ab;}
+/* 모바일 스타일 */
+@media(max-width:600px){
+  #ui{height:44px;padding:0 8px;gap:8px;}
+  .stat{font-size:11px;}
+  #wave-btn,#pause-btn{font-size:11px;padding:4px 8px;}
+  #panel{gap:4px;padding:4px;}
+  .tbtn{min-width:60px;padding:3px 4px;}
+  .tbtn .ico{font-size:16px;}
+  .tbtn .nm{font-size:8px;}
+  .tbtn .ct{font-size:8px;}
+}
+#vbtn{border-color:#16a34a;min-width:78px;}
+#vbtn.ready{border-color:#4ade80;animation:vP 1s infinite alternate;}
+#vbtn.active{border-color:#86efac;background:#052e16;}
+@keyframes vP{from{box-shadow:0 0 4px #16a34a;}to{box-shadow:0 0 14px #4ade80;}}
+#hbtn{border-color:#c2410c;min-width:78px;}
+#hbtn.ready{border-color:#fb923c;animation:hP 1s infinite alternate;}
+#hbtn.active{border-color:#ff8c00;background:#1e0a00;}
+@keyframes hP{from{box-shadow:0 0 4px #c2410c;}to{box-shadow:0 0 18px #fb923c;}}
+#hfx,#vfx{display:none;position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:12;}
+#hfx{border:8px solid #ff8c00;box-shadow:inset 0 0 80px rgba(255,140,0,0.4);}
+#vfx{border:6px solid #4ade80;box-shadow:inset 0 0 60px rgba(74,222,128,0.3);}
+#canvas{display:block;}
+#overlay{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#1e2d50;border:2px solid #5aadff;border-radius:12px;padding:28px 40px;text-align:center;z-index:20;min-width:320px;}
+#overlay h2{font-size:24px;margin-bottom:8px;}
+#overlay p{color:#90b8d0;margin-bottom:8px;font-size:13px;}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:16px;text-align:left;}
+.stat-item{background:#0d1e3a;border-radius:8px;padding:8px 12px;font-size:12px;color:#c0d8f0;}
+.stat-item strong{color:#ffd700;display:block;font-size:14px;}
+.ov-btns{display:flex;gap:8px;justify-content:center;}
+.ov-btns button{background:#1a3a6a;border:1px solid #5a9aff;border-radius:6px;padding:8px 18px;color:#c0e0ff;font-size:13px;cursor:pointer;}
+.ov-btns .btn-r{background:#2a5abf;}
+.ov-btns .btn-wave{background:#1a4a2a;border-color:#4ade80;color:#4ade80;}
+#hint{position:fixed;bottom:96px;left:0;right:0;text-align:center;font-size:12px;color:#6090b8;pointer-events:none;z-index:5;}
+#pause-overlay{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(10,20,50,0.93);border:2px solid #5aadff;border-radius:14px;padding:30px 50px;text-align:center;z-index:15;font-size:22px;font-weight:bold;color:#c0e0ff;cursor:pointer;}
+#rbanner{display:none;position:fixed;top:50px;left:0;right:0;bottom:90px;align-items:center;justify-content:center;font-size:80px;font-weight:900;color:#fff;text-shadow:0 0 30px #5aadff;pointer-events:none;z-index:18;text-align:center;line-height:1.2;}
+#evbanner{display:none;position:fixed;top:0;left:50%;transform:translateX(-50%);height:50px;line-height:50px;padding:0 20px;z-index:16;font-size:13px;font-weight:bold;color:#ffd700;text-align:center;pointer-events:none;white-space:nowrap;}
+#preview{display:none;position:fixed;top:56px;left:50%;transform:translateX(-50%);background:rgba(10,20,50,0.96);border:2px solid #3a6abf;border-radius:10px;padding:8px 18px;z-index:17;font-size:13px;color:#c0e0ff;text-align:center;pointer-events:none;white-space:nowrap;}
+#evo-popup{display:none;position:fixed;z-index:25;background:#1a2a4a;border:2px solid #5aadff;border-radius:12px;padding:14px 18px;min-width:220px;pointer-events:all;}
+#evo-popup h3{font-size:14px;color:#fff;margin-bottom:6px;text-align:center;}
+.evo-stats{font-size:11px;color:#90b8e0;margin-bottom:8px;line-height:1.7;}
+.evo-stats span{color:#4ade80;}
+.evo-btns{display:flex;gap:6px;}
+.evo-btns button{flex:1;border-radius:6px;padding:6px;font-size:11px;cursor:pointer;border:1px solid;}
+.btn-evo{background:#1a4a2a;border-color:#4ade80;color:#4ade80;}
+.btn-evo:hover{background:#4ade80;color:#000;}
+.btn-evo:disabled{opacity:0.4;cursor:default;}
+.btn-sell2{background:#3a1a1a;border-color:#ff6070;color:#ff6070;}
+.btn-sell2:hover{background:#ff6070;color:#fff;}
+.btn-close2{background:#1a2a4a;border-color:#3a5a9a;color:#90b8e0;max-width:30px;}
+#madeby{position:fixed;bottom:96px;right:12px;font-size:13px;font-weight:bold;color:#fff;pointer-events:none;z-index:31;text-shadow:0 0 8px #3a7abf;}
+#tut{display:flex;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(5,12,30,0.96);z-index:30;align-items:center;justify-content:center;}
+#tbox{background:#1a2a4a;border:2px solid #5aadff;border-radius:16px;padding:16px 24px;max-width:700px;width:96%;text-align:center;max-height:92vh;overflow-y:auto;}
+#tbox h2{font-size:18px;color:#fff;margin-bottom:3px;}
+.sub{font-size:11px;color:#7aa8d0;margin-bottom:10px;}
+.ts{text-align:left;margin-bottom:10px;display:flex;flex-direction:column;gap:6px;}
+.tr{background:#0d1e3a;border-radius:10px;padding:6px 12px;display:flex;gap:10px;}
+@media(max-width:600px){
+  #overlay{padding:16px 14px;min-width:0;width:94%;}
+  #overlay h2{font-size:18px;}
+  .stats-grid{grid-template-columns:1fr 1fr;gap:4px;}
+  .stat-item{padding:6px 8px;font-size:11px;}
+  .stat-item strong{font-size:12px;}
+  #evo-popup{min-width:180px;padding:10px 12px;}
+  .evo-stats{font-size:10px;}
+  #hint{font-size:11px;}
+  #rbanner{font-size:48px;}
+  #tbox{padding:10px 12px;max-height:88vh;}
+  #tbox h2{font-size:15px;}
+  .tr{padding:5px 8px;font-size:11px;}
+  #madeby{font-size:11px;bottom:100px;}
+  #ui{height:44px;}
+  #panel{padding:4px;}
+  .tbtn{min-width:56px;}
+}
+.tr .n{font-size:16px;min-width:26px;}.tr .d{font-size:11px;color:#c0d8f0;line-height:1.5;}
+.tr .d strong{color:#fff;}
+.ttrow{display:flex;justify-content:center;gap:5px;margin-bottom:10px;flex-wrap:wrap;}
+.tt{background:#0d1e3a;border:1px solid #3a6abf;border-radius:8px;padding:4px 8px;text-align:center;min-width:80px;}
+.tt .ti{font-size:15px;}.tt .tn{font-size:9px;color:#90b8e0;font-weight:bold;}.tt .td{font-size:8px;color:#ffd700;margin-top:1px;}
+.start-btn{background:#3a80ff;border:none;border-radius:8px;padding:8px 28px;color:#fff;font-size:14px;font-weight:bold;cursor:pointer;width:100%;}
+</style>
+</head>
+<body>
+<div id="ui">
+  <div class="stat">💰 <span id="smoney">300</span></div>
+  <div class="stat">❤️ <span id="shp">30</span></div>
+  <div class="stat">🌊 <span id="swave">Round 0</span></div>
+  <div class="stat">⭐ <span id="sscore">0</span></div>
+  <button id="pause-btn" onclick="togglePause()" disabled>⏸ 일시정지</button>
+  <button id="wave-btn" onclick="startWave()">▶ 웨이브 시작</button>
+  <button id="sound-btn" onclick="toggleSound()" style="border-radius:6px;padding:5px 8px;cursor:pointer;font-size:12px;border:1px solid #3a5a9a;background:#243560;color:#90c8f0;">🔊</button>
+</div>
+<canvas id="canvas"></canvas>
+<div id="panel">
+  <div class="tbtn" id="b0" onclick="selT(0)">
+    <div class="ico">📋</div><div class="nm">민원센터</div>
+    <div class="ct">💰50</div><div class="pw">기본 단일공격</div>
+  </div>
+  <div style="width:1px;height:60px;background:#3a5a9a;margin:0 2px"></div>
+  <div class="tbtn" id="vbtn" onclick="useVacation()">
+    <div class="ico">🏖️</div><div class="nm" style="color:#4ade80;">특별휴가부여</div>
+    <div class="ct" id="vct" style="color:#888;">⭐0/500</div>
+    <div class="pw" style="color:#4ade80;">공속·탄속2배 2초</div>
+  </div>
+  <div class="tbtn" id="hbtn" onclick="useHotong()">
+    <div class="ico">📣</div><div class="nm" style="color:#ff8c00;">시장의 호통</div>
+    <div class="ct" id="hct" style="color:#888;">⭐0/1000</div>
+    <div class="pw" style="color:#ff8c00;">공격력·공속·탄속3배+감속</div>
+  </div>
+  <div style="width:1px;height:60px;background:#3a5a9a;margin:0 2px"></div>
+  <div class="tbtn" id="bsell" onclick="selSell()" style="border-color:#ff6070;color:#ff8090;min-width:50px;">🗑️<br><span style="font-size:9px">판매</span></div>
+</div>
+<div id="hfx"></div><div id="vfx"></div>
+<div id="evbanner"></div><div id="preview"></div>
+<div id="madeby">made by HKS / v3.5</div>
+<div id="hint">민원센터를 설치한 뒤 클릭해서 진화시키세요!</div>
+<div id="rbanner"></div>
+<div id="pause-overlay" onclick="togglePause()">⏸ 일시정지<br><span style="font-size:14px;color:#7aa8d0">클릭하면 계속</span></div>
+<div id="evo-popup">
+  <h3 id="evo-title">진화</h3>
+  <div class="evo-stats" id="evo-stats"></div>
+  <div class="evo-btns">
+    <button class="btn-evo" id="evo-btn" onclick="doEvolve()">⬆️ 진화</button>
+    <button class="btn-sell2" onclick="doSell()">🗑️ 판매</button>
+    <button class="btn-close2" onclick="closeEvoPopup()">✕</button>
+  </div>
+</div>
+<div id="tut">
+  <div id="tbox">
+    <h2>🏛️ 민원 몬스터 타워 디펜스</h2>
+    <div class="sub">밀려오는 민원 몬스터들로부터 창원시청을 지켜내세요!</div>
+    <div class="ts">
+      <div class="tr"><div class="n">1️⃣</div><div class="d"><strong>민원센터(💰50) 설치 후 클릭해서 진화!</strong><br>📋민원센터→🖥️동사무소(+100)→📢사업소(+500)→🏛️구청(+1000, 최대5개)<br>진화할수록 강력해지며 구청은 진상몬스터·시의원 카운터!</div></div>
+      <div class="tr"><div class="n">✨</div><div class="d"><strong>타워 시너지!</strong> 인접(150px) 타워끼리 조합하면 버프 발동!<br>📢사업소+🏛️구청 → 구청 공격력 <strong>+50%</strong> | 🖥️동사무소+📢사업소 → 슬로우 <strong>+40%</strong> | 📋/🖥️+🏛️구청 → 구청 공격속도 <strong>+25%</strong><br>🗺️ 매 게임마다 맵이 랜덤으로 바뀌니 배치 전략을 다시 생각하세요!</div></div>
+      <div class="tr"><div class="n">2️⃣</div><div class="d"><strong>웨이브 시작</strong> — 라운드마다 강해짐. 5배수 🗳️선거시즌. 라운드3~부터 랜덤이벤트!</div></div>
+      <div class="tr"><div class="n">⚠️</div><div class="d">😤<strong>반복민원충</strong> 물량형 | 😡<strong>고함민원인</strong> 타워감속 | 👿<strong>진상몬스터</strong> 타워철거(구청에 취약!) | 📄<strong>시민의소리</strong> 고속형 | 🎩<strong>시의원</strong> 최고가타워철거(구청에 취약!) | 🏛️<strong>구청은 철거 면역!</strong><br>📮<strong>국민신문고</strong>(6R~) 고체력·고속 | 🪑<strong>자생단체</strong>(8R~) 광역마비 | 🔴<strong>시의원</strong> 타워철거형 | 🔵<strong>시의원</strong> 주변적 속도버프 | 👑<strong>시의장</strong>(정기의회 마지막) 빨간+파란의원 능력 2배</div></div>
+      <div class="tr"><div class="n">⭐</div><div class="d">⭐<strong>500개</strong>→🏖️특별휴가(공속·탄속2배 2초) | ⭐<strong>1000개</strong>→📣시장의 호통(공격력·공속·탄속3배+적감속)</div></div>
+    </div>
+    <div class="ttrow">
+      <div class="tt"><div class="ti">📋</div><div class="tn">민원센터</div><div class="td">💰50 기본</div></div>
+      <div class="tt" style="border-color:#00cfff44;"><div class="ti">🖥️</div><div class="tn">동사무소</div><div class="td">+💰100 강화</div></div>
+      <div class="tt" style="border-color:#c084fc44;"><div class="ti">📢</div><div class="tn">사업소</div><div class="td">+💰500 광역슬로우</div></div>
+      <div class="tt" style="border-color:#f8717144;"><div class="ti">🏛️</div><div class="tn">구청(최대5)</div><div class="td">+💰1000 최종병기</div></div>
+    </div>
+    <div style="font-size:10px;color:#aaa;margin-bottom:6px;">made by HKS / v3.5</div>
+    <button class="start-btn" onclick="startGame()">🎮 게임 시작!</button>
+  </div>
+</div>
+<div id="overlay">
+  <h2 id="ov-title"></h2><p id="ov-body"></p>
+  <div class="stats-grid" id="stats-grid"></div>
+  <div class="ov-btns">
+    <button class="btn-wave" onclick="restartGame()">🔄 처음부터 시작</button>
+  </div>
+</div>
+
+<script>
+// ── 타워 진화 단계 정의 ──
+var TLEVELS=[
+  {name:'민원센터', ico:'📋', col:'#94a3b8', pc:'#c0c0c0', range:100, dmg:28,  rate:58,  ps:10, psh:'circle', evoCost:100,  splash:0,   slowPow:0,   maxHp:1},
+  {name:'동사무소', ico:'🖥️', col:'#00cfff', pc:'#00eeff', range:125, dmg:65,  rate:50,  ps:12, psh:'circle', evoCost:500,  splash:0,   slowPow:0,   maxHp:2},
+  {name:'사업소',   ico:'📢', col:'#c084fc', pc:'#e040fb', range:180, dmg:35,  rate:30,  ps:16, psh:'wave',   evoCost:1000, splash:80,  slowPow:200, aura:true, maxHp:3},
+  {name:'구청',     ico:'🏛️', col:'#f87171', pc:'#ff2244', range:200, dmg:220, rate:50,  ps:20, psh:'splash', evoCost:0,    splash:130, slowPow:100, counterDmg:3, maxHp:999},
+];
+var EVOLVE_COST=[100,500,1000];
+var GPOOL=['의창구청','성산구청','마산합포구청','마산회원구청','진해구청'];
+var REVTS=['고유가 피해지원금','민생소비쿠폰','재난지원금','정기의회','진해군항제 벚꽃축제','마산국화축제'];
+var MAX_HP=30;
+
+var EDEFS=[
+  {hp:67,  spd:0.55,rw:22, dmg:1,  col:'#f87171',sz:14,ico:'😤',tag:'😤 반복민원충'},
+  {hp:134, spd:0.45,rw:35, dmg:3,  col:'#fb923c',sz:17,ico:'😡',tag:'😡 고함민원인'},
+  {hp:235, spd:0.38,rw:50, dmg:5,  col:'#a855f7',sz:21,ico:'👿',tag:'👿 진상몬스터'},
+  {hp:84,  spd:0.65,rw:28, dmg:2,  col:'#94a3b8',sz:15,ico:'📄',tag:'📄 시민의소리'},
+  {hp:1008,spd:0.30,rw:120,dmg:15, col:'#f59e0b',sz:27,ico:'🎩',tag:'🎩 시의원'},
+  {hp:520, spd:0.98,rw:80, dmg:8,  col:'#38bdf8',sz:19,ico:'📮',tag:'📮 국민신문고'},
+  {hp:310, spd:0.55,rw:45, dmg:4,  col:'#86efac',sz:20,ico:'🪑',tag:'🪑 자생단체'},
+  {hp:800, spd:0.50,rw:100,dmg:12, col:'#ef4444',sz:25,ico:'🎩',tag:'🔴 시의원', red:true},
+  {hp:800, spd:0.50,rw:100,dmg:12, col:'#3b82f6',sz:25,ico:'🎩',tag:'🔵 시의원', blue:true},
+  {hp:1600,spd:0.45,rw:200,dmg:24, col:'#fbbf24',sz:30,ico:'🎩',tag:'👑 시의장', gold:true, red:true, blue:true},
+];
+
+var cv=document.getElementById('canvas');
+var cx=cv.getContext('2d');
+function getPanelH(){return document.getElementById('panel').offsetHeight||90;}
+function getUIH(){return document.getElementById('ui').offsetHeight||50;}
+var W=window.innerWidth,H=window.innerHeight-getUIH()-getPanelH(),PATH=[];
+
+// ── 랜덤 맵 패턴 (게임 시작 시 1개 선택) ──
+var currentMapIdx=0;
+var MAP_PATTERNS=[
+  // 0: 기본 S자
+  function(){return[
+    {x:-60,y:H*0.28},{x:W*0.20,y:H*0.28},{x:W*0.20,y:H*0.68},
+    {x:W*0.45,y:H*0.68},{x:W*0.45,y:H*0.18},{x:W*0.72,y:H*0.18},
+    {x:W*0.72,y:H*0.75},{x:W-90,y:H*0.75},{x:W-90,y:H*0.44},
+  ];},
+  // 1: Z자형
+  function(){return[
+    {x:-60,y:H*0.20},{x:W*0.55,y:H*0.20},{x:W*0.55,y:H*0.50},
+    {x:W*0.25,y:H*0.50},{x:W*0.25,y:H*0.80},{x:W-90,y:H*0.80},
+    {x:W-90,y:H*0.44},
+  ];},
+  // 2: 나선형
+  function(){return[
+    {x:-60,y:H*0.50},{x:W*0.15,y:H*0.50},{x:W*0.15,y:H*0.15},
+    {x:W*0.60,y:H*0.15},{x:W*0.60,y:H*0.80},{x:W*0.35,y:H*0.80},
+    {x:W*0.35,y:H*0.38},{x:W*0.82,y:H*0.38},{x:W-90,y:H*0.44},
+  ];},
+  // 3: U자형
+  function(){return[
+    {x:-60,y:H*0.22},{x:W*0.30,y:H*0.22},{x:W*0.30,y:H*0.78},
+    {x:W*0.70,y:H*0.78},{x:W*0.70,y:H*0.22},{x:W-90,y:H*0.22},
+    {x:W-90,y:H*0.44},
+  ];},
+  // 4: W자형
+  function(){return[
+    {x:-60,y:H*0.20},{x:W*0.20,y:H*0.20},{x:W*0.20,y:H*0.72},
+    {x:W*0.38,y:H*0.72},{x:W*0.38,y:H*0.28},{x:W*0.58,y:H*0.28},
+    {x:W*0.58,y:H*0.72},{x:W*0.78,y:H*0.72},{x:W*0.78,y:H*0.20},
+    {x:W-90,y:H*0.20},{x:W-90,y:H*0.44},
+  ];},
+];
+function buildPath(){
+  return MAP_PATTERNS[currentMapIdx]();
+}
+function pickRandomMap(){
+  currentMapIdx=Math.floor(Math.random()*MAP_PATTERNS.length);
+}
+function rebuildCanvas(){
+  var oldW=W,oldH=H;
+  W=window.innerWidth;H=window.innerHeight-getUIH()-getPanelH();
+  cv.width=W;cv.height=H;cv.style.marginTop=getUIH()+'px';
+  PATH=buildPath();
+  if(oldW>0&&oldH>0&&towers&&towers.length)
+    for(var i=0;i<towers.length;i++){towers[i].x*=W/oldW;towers[i].y*=H/oldH;}
+}
+rebuildCanvas();
+window.addEventListener('resize',rebuildCanvas);
+
+var money,hp,score,wave,waveActive,paused;
+var towers,enemies,projs,parts;
+var selTower,sellMode,selectedTower;
+var spawnQueue,spawnTimer;
+var hotongOn,hotongT,vacOn,vacT,evHpMul,evFestival;
+var gNames,gBuilt;
+var mouseX=-999,mouseY=-999;
+var statKills,statMaxCombo,statCurCombo,statVacCount,statHotongCount;
+var situHintCooldown;
+
+// ── 이 라운드 재시작을 위한 저장 변수 ──
+var savedWave=0;
+
+function spdMul(w){return 0.32+(w-1)*0.13;}
+function shuffleG(){gNames=GPOOL.slice();gBuilt=0;}
+
+function getTotalCost(lvl){
+  var c=50;
+  for(var i=0;i<lvl;i++)c+=EVOLVE_COST[i];
+  return c;
+}
+
+function initState(){
+  money=300;hp=MAX_HP;score=0;wave=0;
+  waveActive=false;paused=false;
+  towers=[];enemies=[];projs=[];parts=[];
+  selTower=0;sellMode=false;selectedTower=null;
+  spawnQueue=[];spawnTimer=0;
+  hotongOn=false;hotongT=0;vacOn=false;vacT=0;evHpMul=1;evFestival=false;
+  statKills=0;statMaxCombo=0;statCurCombo=0;statVacCount=0;statHotongCount=0;
+  situHintCooldown=0;
+  shuffleG();PATH=buildPath();
+}
+
+// ── 이 라운드부터 재시작 (타워 유지, 돈/체력 리셋) ──
+function initStateFromWave(targetWave){
+  // 적·투사체·파티클 초기화
+  enemies=[];projs=[];parts=[];
+  // 타워 상태 초기화 (타워 자체는 유지)
+  gBuilt=0;
+  for(var i=0;i<towers.length;i++){
+    if(towers[i].lvl===3)gBuilt++;
+    towers[i].cd=0;towers[i].debuffed=false;towers[i].bossHit=false;towers[i].destroyCooldown=0;towers[i].paralyzed=0;
+    towers[i].hp=TLEVELS[towers[i].lvl].maxHp;towers[i].maxHp=TLEVELS[towers[i].lvl].maxHp;
+  }
+  // 돈·체력 리셋
+  money=300+targetWave*30;
+  hp=MAX_HP;
+  score=0;
+  wave=targetWave-1; // startWave()에서 wave++ 하므로 -1
+  waveActive=false;paused=false;
+  selTower=0;sellMode=false;selectedTower=null;
+  spawnQueue=[];spawnTimer=0;
+  hotongOn=false;hotongT=0;vacOn=false;vacT=0;evHpMul=1;evFestival=false;
+  statKills=0;statMaxCombo=0;statCurCombo=0;statVacCount=0;statHotongCount=0;
+  situHintCooldown=0;
+  PATH=buildPath();
+}
+
+function initDOM(){
+  document.getElementById('overlay').style.display='none';
+  document.getElementById('pause-overlay').style.display='none';
+  document.getElementById('hfx').style.display='none';
+  document.getElementById('vfx').style.display='none';
+  document.getElementById('evbanner').style.display='none';
+  document.getElementById('rbanner').style.display='none';
+  document.getElementById('preview').style.display='none';
+  document.getElementById('evo-popup').style.display='none';
+  document.getElementById('wave-btn').textContent='▶ 웨이브 시작';
+  document.getElementById('pause-btn').textContent='⏸ 일시정지';
+  document.getElementById('pause-btn').disabled=true;
+  document.getElementById('swave').textContent='Round 0';
+  document.getElementById('b0').classList.add('sel');
+  upd();
+}
+function startGame(){
+  stopLoop();
+  pickRandomMap();
+  initState();rebuildCanvas();
+  document.getElementById('tut').style.display='none';
+  hint('💡 [맵 '+(['S자','Z자','나선형','U자','W자'][currentMapIdx])+'] 민원센터를 설치하고, 클릭해서 진화시키세요!');
+  startLoop();
+}
+function restartGame(){
+  stopLoop();
+  pickRandomMap();
+  initState();
+  rebuildCanvas();
+  document.getElementById('overlay').style.display='none';
+  document.getElementById('pause-overlay').style.display='none';
+  document.getElementById('hfx').style.display='none';
+  document.getElementById('vfx').style.display='none';
+  document.getElementById('evbanner').style.display='none';
+  document.getElementById('rbanner').style.display='none';
+  document.getElementById('preview').style.display='none';
+  document.getElementById('evo-popup').style.display='none';
+  document.getElementById('tut').style.display='none';
+  document.getElementById('wave-btn').textContent='▶ 웨이브 시작';
+  document.getElementById('pause-btn').textContent='⏸ 일시정지';
+  document.getElementById('pause-btn').disabled=true;
+  document.getElementById('swave').textContent='Round 0';
+  document.getElementById('b0').classList.add('sel');
+  upd();
+  hint('💡 민원센터를 설치하고, 클릭해서 동사무소→사업소→구청으로 진화시키세요!');
+  startLoop();
+}
+function goHome(){
+  stopLoop();
+  initState();rebuildCanvas();
+  document.getElementById('overlay').style.display='none';
+  document.getElementById('tut').style.display='flex';
+  startLoop();
+}
+
+// ── 이 라운드 재시작 버튼 ──
+function restartFromWave(){
+  var tw=savedWave>0?savedWave:1;
+  stopLoop();
+  initStateFromWave(tw);
+  document.getElementById('overlay').style.display='none';
+  document.getElementById('pause-overlay').style.display='none';
+  document.getElementById('hfx').style.display='none';
+  document.getElementById('vfx').style.display='none';
+  document.getElementById('evbanner').style.display='none';
+  document.getElementById('rbanner').style.display='none';
+  document.getElementById('preview').style.display='none';
+  document.getElementById('evo-popup').style.display='none';
+  document.getElementById('wave-btn').textContent='▶ 웨이브 시작';
+  document.getElementById('pause-btn').textContent='⏸ 일시정지';
+  document.getElementById('pause-btn').disabled=true;
+  document.getElementById('swave').textContent='Round '+(tw-1);
+  document.getElementById('tut').style.display='none';
+  upd();
+  hint('🔄 Round '+tw+'부터 다시 시작! 타워는 유지됩니다.');
+  setTimeout(function(){startLoop();startWave();},800);
+}
+
+function upd(){
+  document.getElementById('smoney').textContent=money;
+  document.getElementById('shp').textContent=hp;
+  document.getElementById('sscore').textContent=score;
+  var vb=document.getElementById('vbtn'),vc=document.getElementById('vct');
+  if(vacOn){vb.classList.remove('ready');vb.classList.add('active');vc.textContent='발동중! '+Math.ceil(vacT/60)+'초';vc.style.color='#4ade80';}
+  else if(score>=500){vb.classList.add('ready');vb.classList.remove('active');vc.textContent='⭐'+score+' 준비됨!';vc.style.color='#4ade80';}
+  else{vb.classList.remove('ready','active');vc.textContent='⭐'+score+'/500';vc.style.color='#888';}
+  var hb=document.getElementById('hbtn'),hc=document.getElementById('hct');
+  if(hotongOn){hb.classList.remove('ready');hb.classList.add('active');hc.textContent='발동중! '+Math.ceil(hotongT/60)+'초';hc.style.color='#ff8c00';}
+  else if(score>=1000){hb.classList.add('ready');hb.classList.remove('active');hc.textContent='⭐'+score+' 준비됨!';hc.style.color='#fb923c';}
+  else{hb.classList.remove('ready','active');hc.textContent='⭐'+score+'/1000';hc.style.color='#888';}
+}
+function hint(msg){
+  var el=document.getElementById('hint');
+  el.textContent=msg;el.style.color='#f87171';
+  setTimeout(function(){el.textContent='민원센터를 설치한 뒤 클릭해서 진화시키세요!';el.style.color='#6090b8';},3000);
+}
+function hintWarn(msg){
+  var el=document.getElementById('hint');
+  el.textContent=msg;el.style.color='#fbbf24';el.style.fontWeight='bold';
+  setTimeout(function(){el.textContent='민원센터를 설치한 뒤 클릭해서 진화시키세요!';el.style.color='#6090b8';el.style.fontWeight='normal';},5000);
+}
+function showBanner(txt,col,sub){
+  var b=document.getElementById('rbanner');
+  b.innerHTML=txt+(sub?'<br><span style="font-size:22px;color:'+(col||'#adf')+'">'+sub+'</span>':'');
+  b.style.color=col||'#fff';b.style.textShadow=col?'0 0 30px '+col:'0 0 30px #5aadff';
+  b.style.display='flex';setTimeout(function(){b.style.display='none';},2400);
+}
+function setEvBanner(html){
+  var el=document.getElementById('evbanner');
+  if(html){el.innerHTML=html;el.style.display='block';}else el.style.display='none';
+}
+function showPreview(html){
+  var el=document.getElementById('preview');
+  if(html){el.innerHTML=html;el.style.display='block';}else el.style.display='none';
+}
+
+// ── 진화 팝업 ──
+function openEvoPopup(t,px,py){
+  selectedTower=t;
+  var tl=TLEVELS[t.lvl];
+  var name=t.lvl===3&&t.label?t.label:tl.name;
+  document.getElementById('evo-title').textContent=tl.ico+' '+name+' ('+['1단계','2단계','3단계','최종단계'][t.lvl]+')';
+  var s='공격력: '+tl.dmg+' / 사거리: '+tl.range;
+  if(t.lvl===2) s+='<br>🐌 광역 슬로우 | 사업소 범위 내 모든 적 감속';
+  if(t.lvl===3) s+='<br>💥 광역 폭발 | 👿🎩 상대 공격력 <span>3배</span><br>처치 시 주변 적 슬로우 | 🛡️ <span>철거 면역</span>';
+  if(t.lvl<3){
+    var next=TLEVELS[t.lvl+1];
+    var cost=EVOLVE_COST[t.lvl];
+    s+='<br>진화: '+tl.ico+'→'+next.ico+'<span> '+next.name+'</span> (💰'+cost+')';
+    var eb=document.getElementById('evo-btn');
+    eb.disabled=(money<cost)||(t.lvl===2&&gBuilt>=5);
+    eb.textContent='⬆️ '+next.name+'로 진화 (💰'+cost+')';
+    if(t.lvl===2&&gBuilt>=5){eb.disabled=true;eb.textContent='구청 최대 5개!';}
+  } else {
+    s+='<br><span>✨ 최종 단계!</span>';
+    document.getElementById('evo-btn').disabled=true;
+    document.getElementById('evo-btn').textContent='최종 단계';
+  }
+  document.getElementById('evo-stats').innerHTML=s;
+  var pop=document.getElementById('evo-popup');
+  var popW=pop.offsetWidth||220,popH=pop.offsetHeight||180;
+  var safeX=Math.max(4,Math.min(px,window.innerWidth-popW-4));
+  var safeY=Math.max(getUIH()+4,Math.min(py-160,window.innerHeight-getPanelH()-popH-4));
+  pop.style.left=safeX+'px';
+  pop.style.top=safeY+'px';
+  pop.style.display='block';
+}
+function closeEvoPopup(){document.getElementById('evo-popup').style.display='none';selectedTower=null;}
+function doEvolve(){
+  if(!selectedTower||selectedTower.lvl>=3)return;
+  var cost=EVOLVE_COST[selectedTower.lvl];
+  if(money<cost){hint('예산 부족!');return;}
+  if(selectedTower.lvl===2&&gBuilt>=5){hint('구청은 최대 5개!');return;}
+  // 구청 진화 시 다른 구청과 최소 거리 체크 (150px)
+  if(selectedTower.lvl===2){
+    for(var i=0;i<towers.length;i++){
+      if(towers[i]!==selectedTower&&towers[i].lvl===3){
+        if(Math.hypot(towers[i].x-selectedTower.x,towers[i].y-selectedTower.y)<300){
+          hint('🏛️ 구청끼리는 300px 이상 떨어져야 합니다! 더 멀리 배치하세요!');
+          return;
+        }
+      }
+    }
+  }
+  if(selectedTower.lvl>=1){
+    var nextName=selectedTower.lvl===1?'사업소':'구청';
+    if(nearPath(selectedTower.x,selectedTower.y,130)){
+      hintWarn('⚠️ 경로와 너무 가깝습니다! '+nextName+'는 진상몬스터·시의원 표적이 될 수 있어요!');
+    }
+  }
+  money-=cost;
+  selectedTower.lvl++;
+  var newTl=TLEVELS[selectedTower.lvl];
+  selectedTower.hp=newTl.maxHp;
+  selectedTower.maxHp=newTl.maxHp;
+  if(selectedTower.lvl===3){
+    if(gBuilt>=5){hint('구청은 최대 5개!');selectedTower.lvl--;money+=cost;return;}
+    if(!gNames||gBuilt>=gNames.length){shuffleG();}
+    selectedTower.label=gNames[gBuilt];
+    gBuilt++;
+  }
+  selectedTower.bossHit=false;
+  boom(selectedTower.x,selectedTower.y,'#4ade80',12);
+  boom(selectedTower.x,selectedTower.y,'#ffd700',8);
+  playSound('evolve');
+  var pop=document.getElementById('evo-popup');
+  openEvoPopup(selectedTower,parseInt(pop.style.left),parseInt(pop.style.top)+160);
+  upd();
+}
+function doSell(){
+  if(!selectedTower)return;
+  var tot=getTotalCost(selectedTower.lvl);
+  money+=Math.floor(tot*0.6);
+  if(selectedTower.lvl===3)gBuilt--;
+  towers.splice(towers.indexOf(selectedTower),1);
+  closeEvoPopup();upd();
+}
+
+function selT(i){
+  sellMode=false;selTower=i;
+  document.getElementById('b0').classList.toggle('sel',i===0);
+  document.getElementById('bsell').classList.remove('sel');
+  closeEvoPopup();
+}
+function selSell(){
+  sellMode=!sellMode;selTower=-1;
+  document.getElementById('b0').classList.remove('sel');
+  document.getElementById('bsell').classList.toggle('sel',sellMode);
+  closeEvoPopup();
+}
+function toggleSound(){
+  soundOn=!soundOn;
+  document.getElementById('sound-btn').textContent=soundOn?'🔊':'🔇';
+  document.getElementById('sound-btn').style.color=soundOn?'#90c8f0':'#f87171';
+}
+function togglePause(){
+  if(!waveActive)return;
+  paused=!paused;
+  document.getElementById('pause-overlay').style.display=paused?'block':'none';
+  document.getElementById('pause-btn').textContent=paused?'▶ 계속':'⏸ 일시정지';
+}
+function useVacation(){
+  if(score<500||vacOn||hotongOn)return;
+  score-=500;vacOn=true;vacT=120;statVacCount++;upd();
+  playSound('vacation');
+  document.getElementById('vfx').style.display='block';
+  setTimeout(function(){document.getElementById('vfx').style.display='none';},500);
+  showBanner('🏖️','#4ade80','자치행정과 공문-000호에 의거<br>전직원 특별휴가 부여!!!');
+}
+function useHotong(){
+  if(score<1000||hotongOn)return;
+  score-=1000;hotongOn=true;hotongT=180;statHotongCount++;
+  for(var i=0;i<enemies.length;i++)enemies[i].spd*=0.5;
+  upd();
+  playSound('hotong');
+  document.getElementById('hfx').style.display='block';
+  setTimeout(function(){document.getElementById('hfx').style.display='none';},700);
+  showBanner('📣','#ff8c00','시장실에 민원인 찾아오게 하지마!!!!');
+}
+
+// ── 타워 시너지 시스템 ──
+// 시너지 종류:
+// 1. 사업소(lvl2) + 구청(lvl3) 인접 120px → 구청 공격력 +50% (dmgSyn)
+// 2. 동사무소(lvl1) + 사업소(lvl2) 인접 120px → 사업소 슬로우 +40% (slowSyn)
+// 3. 민원센터/동사무소(lvl0~1) + 구청(lvl3) 인접 120px → 구청 공격속도 +25% (rateSyn)
+function calcSynergies(){
+  for(var i=0;i<towers.length;i++){
+    towers[i].dmgSyn=1;towers[i].rateSyn=1;towers[i].slowSyn=1;towers[i].synLabels=[];
+  }
+  for(var i=0;i<towers.length;i++){
+    for(var j=i+1;j<towers.length;j++){
+      var dist=Math.hypot(towers[i].x-towers[j].x,towers[i].y-towers[j].y);
+      if(dist>150)continue;
+      var a=towers[i],b=towers[j];
+      // 사업소+구청 → 구청 공격력 +50%
+      if((a.lvl===2&&b.lvl===3)||(a.lvl===3&&b.lvl===2)){
+        var gu=a.lvl===3?a:b;
+        gu.dmgSyn=Math.max(gu.dmgSyn,1.5);
+        gu.synLabels.push('⚡+50%');
+      }
+      // 동사무소+사업소 → 사업소 슬로우 +40%
+      if((a.lvl===1&&b.lvl===2)||(a.lvl===2&&b.lvl===1)){
+        var sa=a.lvl===2?a:b;
+        sa.slowSyn=Math.max(sa.slowSyn,1.4);
+        sa.synLabels.push('🌀+40%');
+      }
+      // 민원센터/동사무소+구청 → 구청 공격속도 +25%
+      if((a.lvl<=1&&b.lvl===3)||(a.lvl===3&&b.lvl<=1)){
+        var gu2=a.lvl===3?a:b;
+        gu2.rateSyn=Math.max(gu2.rateSyn,0.75); // rate가 낮을수록 빠름
+        gu2.synLabels.push('⚡빠름');
+      }
+    }
+  }
+}
+function checkSituHints(){
+  if(situHintCooldown>0){situHintCooldown--;return;}
+  var hasLvl2=towers.some(function(t){return t.lvl>=2;});
+  var hasLvl3=towers.some(function(t){return t.lvl===3;});
+  var fastE=enemies.some(function(e){return e.ico==='📄';});
+  var jinsang=enemies.some(function(e){return e.ico==='👿';});
+  var boss=enemies.some(function(e){return e.red||e.blue||e.gold;});
+  if((jinsang||boss)&&!hasLvl3&&gBuilt<5){situHintCooldown=600;hint('🏛️ 진상몬스터/의원 등장! 구청으로 진화하면 3배 데미지!');}
+  else if(fastE&&!hasLvl2){situHintCooldown=600;hint('📢 빠른 시민의소리! 사업소로 진화하면 광역 슬로우!');}
+  else if(enemies.length>=5&&!hasLvl2){situHintCooldown=600;hint('📢 몬스터가 몰려옵니다! 사업소 광역 슬로우가 필요해요!');}
+}
+
+// 터치 → 마우스 이벤트 변환 헬퍼
+function getTouchPos(e){
+  var r=cv.getBoundingClientRect();
+  var t=e.changedTouches[0];
+  return{x:t.clientX-r.left,y:t.clientY-r.top};
+}
+cv.addEventListener('mousemove',function(e){var r=cv.getBoundingClientRect();mouseX=e.clientX-r.left;mouseY=e.clientY-r.top;});
+cv.addEventListener('mouseleave',function(){mouseX=-999;mouseY=-999;});
+// 터치 시작: mouseX/Y 업데이트 (미리보기용)
+cv.addEventListener('touchstart',function(e){
+  e.preventDefault();
+  var p=getTouchPos(e);mouseX=p.x;mouseY=p.y;
+},{passive:false});
+// 터치 이동: 미리보기 업데이트
+cv.addEventListener('touchmove',function(e){
+  e.preventDefault();
+  var p=getTouchPos(e);mouseX=p.x;mouseY=p.y;
+},{passive:false});
+// 터치 종료: 클릭처럼 처리
+cv.addEventListener('touchend',function(e){
+  e.preventDefault();
+  var p=getTouchPos(e);
+  mouseX=-999;mouseY=-999;
+  // 클릭 이벤트와 동일한 로직 실행
+  cv.dispatchEvent(new MouseEvent('click',{
+    clientX:e.changedTouches[0].clientX,
+    clientY:e.changedTouches[0].clientY,
+    bubbles:true
+  }));
+},{passive:false});
+cv.addEventListener('click',function(e){
+  if(document.getElementById('tut').style.display==='flex')return;
+  var pop=document.getElementById('evo-popup');
+  if(pop.style.display==='block'){
+    var r2=pop.getBoundingClientRect();
+    if(e.clientX<r2.left||e.clientX>r2.right||e.clientY<r2.top||e.clientY>r2.bottom){closeEvoPopup();return;}
+    return;
+  }
+  if(paused){togglePause();return;}
+  var r=cv.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;
+  if(!sellMode){
+    for(var i=0;i<towers.length;i++){
+      if(Math.hypot(towers[i].x-mx,towers[i].y-my)<26){openEvoPopup(towers[i],e.clientX,e.clientY);return;}
+    }
+  }
+  if(sellMode){
+    var f=null;
+    for(var i=0;i<towers.length;i++)if(Math.hypot(towers[i].x-mx,towers[i].y-my)<26){f=towers[i];break;}
+    if(f){money+=Math.floor(getTotalCost(f.lvl)*0.6);if(f.lvl===3)gBuilt--;towers.splice(towers.indexOf(f),1);upd();}
+    return;
+  }
+  if(selTower!==0)return;
+  if(nearPath(mx,my)){hint('경로 위에는 설치 불가!');return;}
+  var ov=false;
+  for(var i=0;i<towers.length;i++)if(Math.hypot(towers[i].x-mx,towers[i].y-my)<40){ov=true;break;}
+  if(ov){hint('이미 타워가 있어요!');return;}
+  if(money<50){hint('예산 부족!');return;}
+  money-=50;
+  towers.push({x:mx,y:my,lvl:0,cd:0,label:null,debuffed:false,bossHit:false,destroyCooldown:0,hp:1,maxHp:1,paralyzed:0});
+  playSound('place');
+  upd();
+});
+
+function pLen(){var l=0;for(var i=1;i<PATH.length;i++)l+=Math.hypot(PATH[i].x-PATH[i-1].x,PATH[i].y-PATH[i-1].y);return l||1;}
+function ptAt(t){
+  var tot=pLen(),d=t*tot;
+  for(var i=1;i<PATH.length;i++){var dx=PATH[i].x-PATH[i-1].x,dy=PATH[i].y-PATH[i-1].y,l=Math.hypot(dx,dy);if(d<=l)return{x:PATH[i-1].x+dx*(d/l),y:PATH[i-1].y+dy*(d/l)};d-=l;}
+  return{x:PATH[PATH.length-1].x,y:PATH[PATH.length-1].y};
+}
+function nearPath(x,y,r){
+  r=r||44;
+  for(var i=1;i<PATH.length;i++){
+    var ax=PATH[i-1].x,ay=PATH[i-1].y,bx=PATH[i].x,by=PATH[i].y,dx=bx-ax,dy=by-ay,l=dx*dx+dy*dy;
+    var t=l?Math.max(0,Math.min(1,((x-ax)*dx+(y-ay)*dy)/l)):0;
+    if(Math.hypot(x-ax-t*dx,y-ay-t*dy)<r)return true;
+  }
+  return false;
+}
+function destroyTower(t){
+  var tot=getTotalCost(t.lvl);
+  money+=Math.floor(tot*0.3);
+  boom(t.x,t.y,'#ff2222',18);boom(t.x,t.y,'#ff8800',10);
+  playSound('destroy');
+  parts.push({x:t.x,y:t.y,vx:0,vy:0,life:20,max:20,col:'#ff2222',sz:100,ring:true});
+  var idx=towers.indexOf(t);if(idx>=0)towers.splice(idx,1);
+  if(t.lvl===3)gBuilt--;
+  if(selectedTower===t)closeEvoPopup();
+  upd();
+}
+
+function pickType(maxT){
+  var t=Math.min(Math.floor(Math.random()*(1+Math.floor(wave/2))),maxT);
+  if(t===4)t=Math.random()<0.5?7:8;
+  return t;
+}
+function startWave(){
+  if(waveActive)return;
+  wave++;waveActive=true;PATH=buildPath();
+  savedWave=wave;
+  playSound('wave'); // ── 현재 라운드 저장 ──
+  spawnQueue=[];spawnTimer=0;evHpMul=1;evFestival=false;
+  var elec=(wave%5===0);
+  var evIdx=-1;
+  if(wave>=3){
+    var roll=Math.random();
+    if(roll<0.20&&wave>=7)evIdx=REVTS.indexOf('정기의회');
+    else if(roll<0.45){var ne=['고유가 피해지원금','민생소비쿠폰','재난지원금'];evIdx=REVTS.indexOf(ne[Math.floor(Math.random()*ne.length)]);}
+    else if(roll<0.60){var fe=['진해군항제 벚꽃축제','마산국화축제'];evIdx=REVTS.indexOf(fe[Math.floor(Math.random()*fe.length)]);}
+  }
+  var ev=evIdx>=0?REVTS[evIdx]:null;
+  var mMul=1;
+  if(elec)mMul*=2;
+  if(ev&&ev!=='정기의회'&&ev!=='진해군항제 벚꽃축제'&&ev!=='마산국화축제'){mMul*=2;evHpMul=1.5;}
+  if(ev==='진해군항제 벚꽃축제'||ev==='마산국화축제'){mMul*=2;evFestival=true;}
+  document.getElementById('swave').textContent='Round '+wave+(elec?' 🗳️선거시즌':'');
+  document.getElementById('wave-btn').textContent='진행 중...';
+  document.getElementById('pause-btn').disabled=false;
+  if(elec)showBanner('🗳️ 선거시즌!','#f59e0b','Round '+wave+' — 민원 2배!');
+  else if(ev==='진해군항제 벚꽃축제')showBanner('🌸 진해군항제!','#f9a8d4','몬스터 2배 · 타워 공격속도 -50%!');
+  else if(ev==='마산국화축제')showBanner('🌼 마산국화축제!','#fde68a','몬스터 2배 · 타워 공격속도 -50%!');
+  else showBanner('ROUND '+wave);
+  // 라운드별 경고 및 클리어 팁
+  if(wave===3)setTimeout(function(){hint('⚠️ 민원인의 공격이 시작됩니다! 타워를 경로에서 멀리 배치하세요!');},1200);
+  else if(wave===4)setTimeout(function(){hint('⚠️ 진상몬스터 출몰 구간! 동사무소 이상으로 진화하세요!');},1200);
+  else if(wave===5)setTimeout(function(){hint('⚠️ 선거시즌! 시의원이 타워를 파괴합니다! 구청 확보가 관건!');},1200);
+  else if(wave===7)setTimeout(function(){hint('💡 팁: ⭐500개 모이면 🏖️특별휴가로 공속 2배! 위기 때 사용하세요!');},1200);
+  else if(wave===9)setTimeout(function(){hint('💡 팁: 구청을 경로에서 멀리 배치할수록 오래 살아남아요!');},1200);
+  var ep=[];
+  if(elec)ep.push('🗳️ 선거시즌');
+  if(ev==='정기의회')ep.push('🏛️ [정기의회] — 빨간·파란의원 + 👑시의장 등장!');
+  else if(ev==='진해군항제 벚꽃축제')ep.push('🌸 [진해군항제 벚꽃축제] — 몬스터 2배·타워 공격속도 -50%!');
+  else if(ev==='마산국화축제')ep.push('🌼 [마산국화축제] — 몬스터 2배·타워 공격속도 -50%!');
+  else if(ev&&elec)ep.push('📢 ['+ev+'] — 몬스터 수 2배·체력 1.5배!');
+  else if(ev)ep.push('📢 ['+ev+'] — 몬스터 체력 1.5배!');
+  setEvBanner(ep.length?ep.join(' | '):null);
+  // 타입: 0반복민원충 1고함민원인 2진상몬스터 3시민의소리 5국민신문고 6자생단체 7빨간의원 8파란의원 9시의장
+  // 시의원(4)은 제거됨 — 빨간/파란의원으로 대체
+  var maxET=(wave>=8)?8:wave>=6?7:wave>=5?6:wave>=4?3:2;
+  var cnt=Math.round((6+wave*4)*mMul);
+  var itv=Math.max(22,75-wave*5);
+  if(ev==='정기의회'){
+    var cc=Math.min(20,Math.max(3,Math.round(wave*1.5)));
+    for(var i=0;i<cc;i++){
+      spawnQueue.push({delay:i*150+Math.random()*20,type:Math.random()<0.5?7:8});
+    }
+    // 시의장은 정기의회 마지막에 1마리 등장
+    spawnQueue.push({delay:cc*150+300,type:9});
+  } else {
+    for(var i=0;i<cnt;i++){spawnQueue.push({delay:i*itv+Math.random()*10,type:pickType(maxET)});}
+    // 4라운드 배수마다 빨간/파란의원 1마리 추가
+    if(wave%4===0)spawnQueue.push({delay:cnt*itv+60,type:Math.random()<0.5?7:8});
+    // 국민신문고: 6라운드부터 등장
+    if(wave>=6)spawnQueue.push({delay:cnt*itv+30,type:5});
+    // 자생단체: 8라운드부터 등장
+    if(wave>=8)spawnQueue.push({delay:cnt*itv+90,type:6});
+  }
+}
+function previewNextWave(){
+  var nw=wave+1,elec=(nw%5===0);
+  var icons='',types=[],maxET=(nw>=5)?3:2;
+  for(var i=0;i<8;i++){var ei=Math.min(Math.floor(Math.random()*(1+Math.floor(nw/2))),maxET);if(types.indexOf(ei)<0){types.push(ei);icons+=EDEFS[ei].ico+' ';}}
+  if(nw%4===0)icons+='🔴🔵 ';
+  var rec=(nw%4===0||types.indexOf(2)>=0)?' → 🏛️ 구청 진화 권장!':types.indexOf(3)>=0?' → 📢 사업소 진화 권장!':'';
+  showPreview('📋 Round '+nw+(elec?' 🗳️선거시즌':'')+' 예고: '+icons+rec);
+  setTimeout(function(){showPreview(null);},3500);
+}
+function spawnOne(type){
+  var d=EDEFS[type],h=d.hp*(1+wave*0.30)*evHpMul;
+  enemies.push({t:0,x:PATH[0].x,y:PATH[0].y,hp:h,maxHp:h,spd:d.spd*spdMul(wave),slow:0,rw:d.rw,dmg:d.dmg,col:d.col,sz:d.sz,ico:d.ico,tag:d.tag,destroyCooldown:0});
+}
+function killE(e){
+  score+=e.rw;money+=e.rw;statKills++;statCurCombo++;
+  if(statCurCombo>statMaxCombo)statMaxCombo=statCurCombo;
+  if(e.gold){playSound('killboss');}
+  else if(e.red||e.blue||e.ico==='👿'){playSound('kill');}
+  else{playShoot();}
+  if(e.ico==='👿'){
+    for(var i=0;i<enemies.length;i++){
+      if(Math.hypot(enemies[i].x-e.x,enemies[i].y-e.y)<100)enemies[i].slow=Math.max(enemies[i].slow,120);
+    }
+    boom(e.x,e.y,'#a855f7',10);
+  }
+  boom(e.x,e.y,e.col,8);
+  var i=enemies.indexOf(e);if(i>=0)enemies.splice(i,1);upd();
+}
+// ── 음향 시스템 (Web Audio API) ──
+var _ac=null;
+var soundOn=true;
+function getAC(){
+  if(!_ac){try{_ac=new(window.AudioContext||window.webkitAudioContext)();}catch(e){}}
+  if(_ac&&_ac.state==='suspended')_ac.resume();
+  return _ac;
+}
+function playSound(type){
+  if(!soundOn)return;
+  var ac=getAC();if(!ac)return;
+  var o=ac.createOscillator(),g=ac.createGain();
+  o.connect(g);g.connect(ac.destination);
+  var t=ac.currentTime;
+  switch(type){
+    case 'shoot': // 타워 발사 - 짧고 날카로운 틱
+      o.type='square';
+      o.frequency.setValueAtTime(440,t);
+      o.frequency.exponentialRampToValueAtTime(220,t+0.05);
+      g.gain.setValueAtTime(0.04,t);
+      g.gain.exponentialRampToValueAtTime(0.001,t+0.06);
+      o.start(t);o.stop(t+0.06);break;
+    case 'kill': // 적 처치 - 경쾌한 팝
+      o.type='sine';
+      o.frequency.setValueAtTime(600,t);
+      o.frequency.exponentialRampToValueAtTime(900,t+0.04);
+      o.frequency.exponentialRampToValueAtTime(300,t+0.12);
+      g.gain.setValueAtTime(0.12,t);
+      g.gain.exponentialRampToValueAtTime(0.001,t+0.14);
+      o.start(t);o.stop(t+0.14);break;
+    case 'killboss': // 보스 처치 - 웅장한 사운드
+      o.type='sawtooth';
+      o.frequency.setValueAtTime(300,t);
+      o.frequency.exponentialRampToValueAtTime(600,t+0.1);
+      o.frequency.exponentialRampToValueAtTime(150,t+0.4);
+      g.gain.setValueAtTime(0.2,t);
+      g.gain.exponentialRampToValueAtTime(0.001,t+0.4);
+      o.start(t);o.stop(t+0.4);break;
+    case 'evolve': // 진화 - 상승음
+      o.type='sine';
+      o.frequency.setValueAtTime(400,t);
+      o.frequency.exponentialRampToValueAtTime(800,t+0.15);
+      o.frequency.exponentialRampToValueAtTime(1200,t+0.3);
+      g.gain.setValueAtTime(0.15,t);
+      g.gain.exponentialRampToValueAtTime(0.001,t+0.35);
+      o.start(t);o.stop(t+0.35);break;
+    case 'destroy': // 타워 파괴 - 낮은 폭발음
+      o.type='sawtooth';
+      o.frequency.setValueAtTime(150,t);
+      o.frequency.exponentialRampToValueAtTime(40,t+0.3);
+      g.gain.setValueAtTime(0.25,t);
+      g.gain.exponentialRampToValueAtTime(0.001,t+0.3);
+      o.start(t);o.stop(t+0.3);break;
+    case 'wave': // 웨이브 시작 - 알림음
+      o.type='sine';
+      o.frequency.setValueAtTime(523,t);
+      o.frequency.setValueAtTime(659,t+0.1);
+      o.frequency.setValueAtTime(784,t+0.2);
+      g.gain.setValueAtTime(0.15,t);
+      g.gain.setValueAtTime(0.15,t+0.25);
+      g.gain.exponentialRampToValueAtTime(0.001,t+0.4);
+      o.start(t);o.stop(t+0.4);break;
+    case 'clear': // 라운드 클리어 - 팡파레
+      o.type='sine';
+      o.frequency.setValueAtTime(523,t);
+      o.frequency.setValueAtTime(784,t+0.12);
+      o.frequency.setValueAtTime(1047,t+0.24);
+      g.gain.setValueAtTime(0.18,t);
+      g.gain.setValueAtTime(0.18,t+0.3);
+      g.gain.exponentialRampToValueAtTime(0.001,t+0.5);
+      o.start(t);o.stop(t+0.5);break;
+    case 'vacation': // 특별휴가 - 경쾌한 상승
+      o.type='sine';
+      o.frequency.setValueAtTime(784,t);
+      o.frequency.exponentialRampToValueAtTime(1568,t+0.2);
+      g.gain.setValueAtTime(0.18,t);
+      g.gain.exponentialRampToValueAtTime(0.001,t+0.3);
+      o.start(t);o.stop(t+0.3);break;
+    case 'hotong': // 시장의 호통 - 강렬한 하강
+      o.type='sawtooth';
+      o.frequency.setValueAtTime(800,t);
+      o.frequency.exponentialRampToValueAtTime(100,t+0.4);
+      g.gain.setValueAtTime(0.22,t);
+      g.gain.exponentialRampToValueAtTime(0.001,t+0.4);
+      o.start(t);o.stop(t+0.4);break;
+    case 'hp': // 체력 피해 - 경고음
+      o.type='square';
+      o.frequency.setValueAtTime(200,t);
+      o.frequency.exponentialRampToValueAtTime(80,t+0.2);
+      g.gain.setValueAtTime(0.15,t);
+      g.gain.exponentialRampToValueAtTime(0.001,t+0.2);
+      o.start(t);o.stop(t+0.2);break;
+    case 'gameover': // 게임오버 - 슬픈 하강
+      o.type='sawtooth';
+      o.frequency.setValueAtTime(400,t);
+      o.frequency.exponentialRampToValueAtTime(300,t+0.2);
+      o.frequency.exponentialRampToValueAtTime(200,t+0.4);
+      o.frequency.exponentialRampToValueAtTime(100,t+0.7);
+      g.gain.setValueAtTime(0.2,t);
+      g.gain.exponentialRampToValueAtTime(0.001,t+0.8);
+      o.start(t);o.stop(t+0.8);break;
+    case 'place': // 타워 설치 - 둔탁한 클릭
+      o.type='sine';
+      o.frequency.setValueAtTime(300,t);
+      o.frequency.exponentialRampToValueAtTime(150,t+0.1);
+      g.gain.setValueAtTime(0.12,t);
+      g.gain.exponentialRampToValueAtTime(0.001,t+0.12);
+      o.start(t);o.stop(t+0.12);break;
+  }
+}
+// 발사음 쿨타임 (매 프레임마다 발사음 나면 시끄러워서)
+var shootSoundCd=0;
+function playShoot(){shootSoundCd--;if(shootSoundCd<=0){playSound('shoot');shootSoundCd=4;}}
+
+function boom(x,y,col,n){for(var i=0;i<n;i++)parts.push({x:x,y:y,vx:(Math.random()-.5)*7,vy:(Math.random()-.5)*7-2,life:28,max:28,col:col,sz:3+Math.random()*4,ring:false});}
+
+function drawBG(){
+  cx.fillStyle='#1a2035';cx.fillRect(0,0,W,H);
+  cx.strokeStyle='rgba(60,100,180,0.2)';cx.lineWidth=1;
+  for(var x=0;x<W;x+=40){cx.beginPath();cx.moveTo(x,0);cx.lineTo(x,H);cx.stroke();}
+  for(var y=0;y<H;y+=40){cx.beginPath();cx.moveTo(0,y);cx.lineTo(W,y);cx.stroke();}
+}
+function drawRoad(){
+  cx.lineCap='round';cx.lineJoin='round';
+  cx.strokeStyle='#1e3a6a';cx.lineWidth=70;cx.beginPath();cx.moveTo(PATH[0].x,PATH[0].y);for(var i=1;i<PATH.length;i++)cx.lineTo(PATH[i].x,PATH[i].y);cx.stroke();
+  cx.strokeStyle='#2e5090';cx.lineWidth=62;cx.beginPath();cx.moveTo(PATH[0].x,PATH[0].y);for(var i=1;i<PATH.length;i++)cx.lineTo(PATH[i].x,PATH[i].y);cx.stroke();
+  cx.strokeStyle='rgba(140,200,255,0.28)';cx.lineWidth=4;cx.setLineDash([20,16]);cx.beginPath();cx.moveTo(PATH[0].x,PATH[0].y);for(var i=1;i<PATH.length;i++)cx.lineTo(PATH[i].x,PATH[i].y);cx.stroke();cx.setLineDash([]);
+  var g=PATH[PATH.length-1];
+  cx.font='38px serif';cx.textAlign='center';cx.textBaseline='middle';cx.fillText('🏛️',g.x,g.y);
+  cx.font='bold 13px sans-serif';cx.fillStyle='#ffdd88';cx.textBaseline='top';cx.fillText('창원시청',g.x,g.y+22);
+  var pct=Math.max(0,hp/MAX_HP),bw=90,bh=13,bx=g.x-45,by=g.y-54;
+  cx.fillStyle='rgba(10,20,50,0.85)';cx.strokeStyle='#5a8abf';cx.lineWidth=1.5;cx.beginPath();cx.roundRect(bx-2,by-2,bw+4,bh+4,4);cx.fill();cx.stroke();
+  cx.fillStyle='#1a2a44';cx.fillRect(bx,by,bw,bh);
+  var bc=pct>0.6?'#4ade80':pct>0.3?'#fbbf24':'#f87171';
+  cx.shadowColor=bc;cx.shadowBlur=10;cx.fillStyle=bc;cx.fillRect(bx,by,bw*pct,bh);cx.shadowBlur=0;
+  cx.strokeStyle='rgba(255,255,255,0.2)';cx.lineWidth=1;cx.strokeRect(bx,by,bw,bh);
+  cx.font='bold 10px sans-serif';cx.fillStyle='#fff';cx.textAlign='center';cx.textBaseline='middle';cx.fillText('🏛️ '+hp+' / '+MAX_HP,g.x,by+bh/2);
+  cx.font='bold 13px sans-serif';cx.fillStyle='rgba(150,220,255,0.8)';cx.textAlign='left';cx.textBaseline='middle';cx.fillText('▶ 입구',PATH[1].x+6,PATH[0].y-22);
+}
+function drawRangePrev(){
+  if(selTower!==0||sellMode||mouseX<0)return;
+  if(money<50)return;
+  var ok=!nearPath(mouseX,mouseY);
+  if(ok)for(var i=0;i<towers.length;i++)if(Math.hypot(towers[i].x-mouseX,towers[i].y-mouseY)<40){ok=false;break;}
+  cx.save();
+  cx.strokeStyle=ok?'#94a3b8cc':'#94a3b855';cx.lineWidth=1.5;cx.fillStyle=ok?'#94a3b822':'#94a3b811';
+  cx.beginPath();cx.arc(mouseX,mouseY,100,0,Math.PI*2);cx.fill();cx.stroke();
+  cx.strokeStyle=ok?'#4ade80':'#f87171';cx.lineWidth=2;cx.beginPath();cx.arc(mouseX,mouseY,20,0,Math.PI*2);cx.stroke();
+  cx.font='14px serif';cx.textAlign='center';cx.textBaseline='middle';cx.fillStyle=ok?'#4ade80':'#f87171';cx.fillText(ok?'✓':'✗',mouseX,mouseY);cx.restore();
+}
+function drawTower(t){
+  var tl=TLEVELS[t.lvl];
+  var sz=20+t.lvl*4;
+  cx.shadowColor=tl.col;cx.shadowBlur=10+t.lvl*8;cx.fillStyle=tl.col+'55';
+  cx.beginPath();cx.arc(t.x,t.y,sz,0,Math.PI*2);cx.fill();
+  cx.strokeStyle=tl.col;cx.lineWidth=2+t.lvl;
+  cx.beginPath();cx.arc(t.x,t.y,sz,0,Math.PI*2);cx.stroke();
+  if(t.lvl===2){
+    cx.strokeStyle=tl.col+'44';cx.lineWidth=1;
+    cx.beginPath();cx.arc(t.x,t.y,tl.range,0,Math.PI*2);cx.stroke();
+  }
+  if(t.debuffed){cx.shadowBlur=0;cx.strokeStyle='#ff4444';cx.lineWidth=2;cx.beginPath();cx.arc(t.x,t.y,sz+5,0,Math.PI*2);cx.stroke();cx.font='10px sans-serif';cx.fillStyle='#ff4444';cx.textAlign='center';cx.textBaseline='top';cx.fillText('⚡감속',t.x,t.y+sz+2);}
+  if(t.paralyzed>0){cx.shadowBlur=0;cx.strokeStyle='#86efac';cx.lineWidth=3;cx.beginPath();cx.arc(t.x,t.y,sz+6,0,Math.PI*2);cx.stroke();cx.font='10px sans-serif';cx.fillStyle='#86efac';cx.textAlign='center';cx.textBaseline='top';cx.fillText('💤마비',t.x,t.y+sz+2);}
+  if(hotongOn){cx.shadowBlur=0;cx.strokeStyle='#ff8c00';cx.lineWidth=2;cx.beginPath();cx.arc(t.x,t.y,sz+5,0,Math.PI*2);cx.stroke();}
+  else if(vacOn){cx.shadowBlur=0;cx.strokeStyle='#4ade80';cx.lineWidth=2;cx.beginPath();cx.arc(t.x,t.y,sz+5,0,Math.PI*2);cx.stroke();}
+  cx.shadowBlur=0;
+  cx.font=(14+t.lvl*3)+'px serif';cx.textAlign='center';cx.textBaseline='middle';cx.fillText(tl.ico,t.x,t.y);
+  var nm=t.lvl===3&&t.label?t.label:tl.name;
+  cx.font='10px sans-serif';cx.fillStyle='rgba(200,230,255,0.9)';cx.textBaseline='top';cx.fillText(nm,t.x,t.y+sz+2);
+  // 시너지 활성 표시
+  if(t.synLabels&&t.synLabels.length>0){
+    cx.shadowBlur=0;cx.strokeStyle='#fde68a';cx.lineWidth=2;
+    cx.beginPath();cx.arc(t.x,t.y,sz+8,0,Math.PI*2);cx.stroke();
+    cx.font='9px sans-serif';cx.fillStyle='#fde68a';cx.textAlign='center';cx.textBaseline='top';
+    cx.fillText(t.synLabels.join(' '),t.x,t.y+sz+14);
+  }
+  if(t.lvl<3&&t.hp<t.maxHp){
+    var bw=sz*2,bh=4,bx=t.x-bw/2,by=t.y-sz-10;
+    cx.fillStyle='#333';cx.fillRect(bx,by,bw,bh);
+    cx.fillStyle=t.hp/t.maxHp>0.5?'#4ade80':'#f87171';
+    cx.fillRect(bx,by,bw*(t.hp/t.maxHp),bh);
+  }
+}
+function drawEnemy(e){
+  if(e.slow>0){cx.strokeStyle='rgba(192,132,252,0.9)';cx.lineWidth=3;cx.beginPath();cx.arc(e.x,e.y,e.sz+7,0,Math.PI*2);cx.stroke();}
+  if(e.blueBuff>0){cx.strokeStyle='rgba(96,165,250,0.8)';cx.lineWidth=2;cx.beginPath();cx.arc(e.x,e.y,e.sz+5,0,Math.PI*2);cx.stroke();}
+  cx.font=(e.sz*1.8)+'px serif';cx.textAlign='center';cx.textBaseline='middle';cx.fillText(e.ico,e.x,e.y);
+  // 빨간/파란/황금 모자 그리기
+  if(e.red||e.blue||e.gold){
+    var isGold=e.gold;
+    var mc=isGold?'#fbbf24':e.red?'#ef4444':'#3b82f6';
+    var mc2=isGold?'#f59e0b':e.red?'#b91c1c':'#1d4ed8';
+    var mc3=isGold?'#fde68a':e.red?'#fca5a5':'#93c5fd';
+    var brim=e.sz*1.1, brimH=e.sz*0.25;
+    var topW=e.sz*0.7, topH=e.sz*0.8;
+    var hx=e.x, hy=e.y-e.sz*0.9;
+    cx.save();
+    cx.fillStyle=mc;
+    cx.beginPath();cx.ellipse(hx,hy,brim,brimH,0,0,Math.PI*2);cx.fill();
+    cx.fillStyle=mc;
+    cx.beginPath();cx.ellipse(hx,hy,topW,brimH,0,Math.PI,0);
+    cx.lineTo(hx+topW,hy-topH);cx.ellipse(hx,hy-topH,topW,brimH*0.7,0,0,Math.PI);
+    cx.closePath();cx.fill();
+    cx.fillStyle=mc3;
+    cx.beginPath();cx.ellipse(hx,hy-topH,topW,brimH*0.7,0,0,Math.PI*2);cx.fill();
+    // 황금 모자 장식 (별★)
+    if(isGold){
+      cx.font='bold '+(e.sz*0.6)+'px serif';cx.fillStyle='#fff';cx.textAlign='center';cx.textBaseline='middle';
+      cx.fillText('★',hx,hy-topH*0.5);
+    }
+    cx.strokeStyle=mc2;cx.lineWidth=isGold?2:1.5;
+    cx.beginPath();cx.ellipse(hx,hy,brim,brimH,0,0,Math.PI*2);cx.stroke();
+    // 황금 모자 추가 광채
+    if(isGold){cx.shadowColor='#fbbf24';cx.shadowBlur=18;cx.strokeStyle='#fde68a';cx.lineWidth=2;cx.beginPath();cx.ellipse(hx,hy-topH,topW,brimH*0.7,0,0,Math.PI*2);cx.stroke();cx.shadowBlur=0;}
+    cx.restore();
+  }
+  cx.save();cx.font='bold 12px sans-serif';cx.textAlign='center';cx.textBaseline='middle';
+  var tw=cx.measureText(e.tag).width+14,ty=e.y-e.sz-14;
+  cx.fillStyle='rgba(10,20,50,0.92)';cx.beginPath();cx.roundRect(e.x-tw/2,ty-9,tw,18,5);cx.fill();
+  cx.strokeStyle=e.col;cx.lineWidth=1.5;cx.beginPath();cx.roundRect(e.x-tw/2,ty-9,tw,18,5);cx.stroke();
+  cx.fillStyle='#fff';cx.fillText(e.tag,e.x,ty);cx.restore();
+  var bw=e.sz*3,bh=5,bx=e.x-bw/2,by=e.y-e.sz-28;
+  cx.fillStyle='#334466';cx.fillRect(bx,by,bw,bh);
+  var p=e.hp/e.maxHp;cx.fillStyle=p>0.6?'#4ade80':p>0.3?'#fbbf24':'#f87171';cx.fillRect(bx,by,bw*p,bh);
+  cx.strokeStyle='rgba(255,255,255,0.2)';cx.lineWidth=1;cx.strokeRect(bx,by,bw,bh);
+}
+function drawProj(p){
+  var tl=TLEVELS[p.tlvl];cx.save();cx.shadowColor=tl.pc;cx.shadowBlur=20;
+  if(tl.psh==='wave'){cx.strokeStyle=tl.pc;cx.lineWidth=4;cx.beginPath();cx.arc(p.x,p.y,tl.ps,0,Math.PI*2);cx.stroke();cx.strokeStyle='rgba(255,255,255,0.5)';cx.lineWidth=2;cx.beginPath();cx.arc(p.x,p.y,tl.ps*0.55,0,Math.PI*2);cx.stroke();}
+  else if(tl.psh==='splash'){cx.fillStyle=tl.pc;cx.beginPath();cx.arc(p.x,p.y,tl.ps/2,0,Math.PI*2);cx.fill();cx.fillStyle='rgba(255,200,80,0.9)';cx.beginPath();cx.arc(p.x,p.y,tl.ps/4,0,Math.PI*2);cx.fill();}
+  else{var g2=cx.createRadialGradient(p.x,p.y,0,p.x,p.y,tl.ps);g2.addColorStop(0,'#fff');g2.addColorStop(0.4,tl.pc);g2.addColorStop(1,tl.pc+'44');cx.fillStyle=g2;cx.beginPath();cx.arc(p.x,p.y,tl.ps,0,Math.PI*2);cx.fill();}
+  cx.restore();
+}
+
+var last=0;
+var loopId=null;
+function stopLoop(){if(loopId){cancelAnimationFrame(loopId);loopId=null;}}
+function startLoop(){stopLoop();last=0;loopId=requestAnimationFrame(loop);}
+function loop(ts){
+  var dt=Math.min((ts-last)/16.67,3);last=ts;
+  drawBG();drawRoad();
+  if(document.getElementById('tut').style.display==='flex'){loopId=requestAnimationFrame(loop);return;}
+  drawRangePrev();
+  // 비활성 상태: 타워만 그리고 종료
+  if(!waveActive&&enemies.length===0){towers.forEach(drawTower);loopId=requestAnimationFrame(loop);return;}
+  if(paused){enemies.forEach(drawEnemy);towers.forEach(drawTower);loopId=requestAnimationFrame(loop);return;}
+  if(hotongOn){hotongT-=dt;if(hotongT<=0){hotongOn=false;hotongT=0;document.getElementById('hfx').style.display='none';}upd();}
+  if(vacOn){vacT-=dt;if(vacT<=0){vacOn=false;vacT=0;document.getElementById('vfx').style.display='none';}upd();}
+  if(waveActive&&spawnQueue.length>0){spawnTimer+=dt;while(spawnQueue.length>0&&spawnTimer>=spawnQueue[0].delay)spawnOne(spawnQueue.shift().type);}
+  for(var i=0;i<towers.length;i++)towers[i].debuffed=false;
+  calcSynergies();
+  checkSituHints();
+  var pl=pLen();
+  for(var i=enemies.length-1;i>=0;i--){
+    var e=enemies[i];
+    var sp=(e.slow>0?e.spd*0.4:e.spd)*dt/pl*10;
+    e.t=Math.min(e.t+sp,1);
+    var pt=ptAt(e.t);e.x=pt.x;e.y=pt.y;
+    if(e.t>=1){hp-=e.dmg;enemies.splice(i,1);statCurCombo=0;playSound('hp');upd();if(hp<=0){showGameOver();return;}continue;}
+    if(e.slow>0)e.slow-=dt;
+    for(var j=0;j<towers.length;j++){if(towers[j].lvl===2&&Math.hypot(towers[j].x-e.x,towers[j].y-e.y)<=TLEVELS[2].range)e.slow=Math.max(e.slow,60);}
+    if(e.ico==='😡'){var cl=null,cd2=100;for(var j=0;j<towers.length;j++){var d2=Math.hypot(towers[j].x-e.x,towers[j].y-e.y);if(d2<cd2){cd2=d2;cl=towers[j];}}if(cl)cl.debuffed=true;}
+    if(e.ico==='👿'){e.destroyCooldown-=dt;if(e.destroyCooldown<=0){var hit=false;for(var j=towers.length-1;j>=0;j--){if(towers[j].lvl===3)continue;if(Math.hypot(towers[j].x-e.x,towers[j].y-e.y)<90&&Math.random()<0.20){towers[j].hp--;boom(towers[j].x,towers[j].y,'#ff4444',4);if(towers[j].hp<=0){destroyTower(towers[j]);}e.destroyCooldown=300;hit=true;break;}}if(!hit)e.destroyCooldown=60;}}
+    if(e.ico==='🎩'){e.destroyCooldown-=dt;if(e.destroyCooldown<=0){var ex=null,mc=0;for(var j=0;j<towers.length;j++){if(towers[j].lvl===3)continue;if(Math.hypot(towers[j].x-e.x,towers[j].y-e.y)<130&&!towers[j].bossHit&&getTotalCost(towers[j].lvl)>mc){mc=getTotalCost(towers[j].lvl);ex=towers[j];}}if(ex){ex.bossHit=true;ex.hp--;boom(ex.x,ex.y,'#ff4444',4);if(ex.hp<=0){destroyTower(ex);}e.destroyCooldown=180;}else e.destroyCooldown=180;}}
+    // 🪑 자생단체: 범위 내 타워 광역 마비 (paralyzed)
+    if(e.tag&&e.tag.indexOf('자생단체')>=0){
+      e.destroyCooldown-=dt;
+      // 쿨타임 중 충전 표시 (범위 내 타워 있을 때)
+      var nearTower=false;
+      for(var j=0;j<towers.length;j++){if(Math.hypot(towers[j].x-e.x,towers[j].y-e.y)<110){nearTower=true;break;}}
+      if(nearTower&&e.destroyCooldown>0){
+        // 충전 중 - 초록 점선 링
+        cx.save();cx.strokeStyle='rgba(134,239,172,'+Math.abs(Math.sin(e.destroyCooldown*0.2))*0.7+')';
+        cx.lineWidth=2;cx.setLineDash([4,4]);
+        cx.beginPath();cx.arc(e.x,e.y,110,0,Math.PI*2);cx.stroke();
+        cx.setLineDash([]);cx.restore();
+      }
+      if(e.destroyCooldown<=0){
+        for(var j=0;j<towers.length;j++){
+          if(Math.hypot(towers[j].x-e.x,towers[j].y-e.y)<110){
+            towers[j].paralyzed=90;
+            // 마비 발동 이펙트 - 번개
+            boom(towers[j].x,towers[j].y,'#86efac',8);
+            parts.push({x:towers[j].x,y:towers[j].y,vx:0,vy:0,life:25,max:25,col:'#86efac',sz:50,ring:true});
+          }
+        }
+        // 자생단체 발동 이펙트
+        boom(e.x,e.y,'#86efac',12);
+        playSound('destroy');
+        e.destroyCooldown=180;
+      }
+    }
+    // 🔴 빨간의원: 진상몬스터처럼 타워 철거 (HP 차감) + 구청 취약
+    if(e.red&&!e.gold){e.destroyCooldown-=dt;if(e.destroyCooldown<=0){var hit=false;for(var j=towers.length-1;j>=0;j--){if(towers[j].lvl===3)continue;if(Math.hypot(towers[j].x-e.x,towers[j].y-e.y)<110&&Math.random()<0.30){towers[j].hp--;boom(towers[j].x,towers[j].y,'#ef4444',5);if(towers[j].hp<=0)destroyTower(towers[j]);e.destroyCooldown=240;hit=true;break;}}if(!hit)e.destroyCooldown=60;}}
+    // 🔵 파란의원: 주변 적 속도 버프 + 시각적 표시
+    if(e.blue){
+      var buffed=false;
+      for(var j=0;j<enemies.length;j++){
+        if(enemies[j]!==e&&Math.hypot(enemies[j].x-e.x,enemies[j].y-e.y)<120){
+          enemies[j].blueBuff=60;buffed=true;
+        }
+      }
+      if(buffed){
+        // 파란 버프 링 표시
+        cx.save();
+        cx.strokeStyle='rgba(96,165,250,0.5)';cx.lineWidth=2;
+        cx.beginPath();cx.arc(e.x,e.y,120,0,Math.PI*2);cx.stroke();
+        // 버프 받은 적들에게 파란 화살표 이펙트
+        cx.strokeStyle='rgba(96,165,250,0.8)';cx.lineWidth=1.5;
+        cx.setLineDash([3,3]);
+        for(var j=0;j<enemies.length;j++){
+          if(enemies[j]!==e&&enemies[j].blueBuff>0&&Math.hypot(enemies[j].x-e.x,enemies[j].y-e.y)<120){
+            cx.beginPath();cx.moveTo(e.x,e.y);cx.lineTo(enemies[j].x,enemies[j].y);cx.stroke();
+          }
+        }
+        cx.setLineDash([]);cx.restore();
+      }
+    }
+    if(e.blueBuff>0){e.blueBuff-=dt;e.spd=EDEFS[enemies.indexOf(e)>=0?enemies.indexOf(e):0].spd*(1+(e.blueBuff>0?0.4:0))*spdMul(wave)/pLen()*10;}
+    drawEnemy(e);
+  }
+  var rb=hotongOn?1/3:vacOn?0.5:1,db=hotongOn?3:1,pb=hotongOn?3:vacOn?2:1;
+  for(var i=0;i<towers.length;i++){
+    var t=towers[i];
+    if(t.paralyzed>0){t.paralyzed-=dt;drawTower(t);continue;} // 자생단체 마비 중
+    t.cd=Math.max(0,t.cd-dt);drawTower(t);if(t.cd>0)continue;
+    var tl=TLEVELS[t.lvl],tgt=null,best=-1;
+    for(var j=0;j<enemies.length;j++)if(Math.hypot(enemies[j].x-t.x,enemies[j].y-t.y)<=tl.range&&enemies[j].t>best){best=enemies[j].t;tgt=enemies[j];}
+    if(!tgt)continue;
+    t.cd=tl.rate*(t.rateSyn||1)*rb*(t.debuffed?1.4:1)*(evFestival?2.0:1);
+    var dmgMul=db*(t.dmgSyn||1);
+    if(t.lvl===3&&(tgt.ico==='👿'||tgt.ico==='🎩'||tgt.red||tgt.blue))dmgMul*=(tl.counterDmg||3);
+    var slowMul=t.slowSyn||1;
+    projs.push({x:t.x,y:t.y,px:t.x,py:t.y,tgt:tgt,tlvl:t.lvl,dmg:tl.dmg*dmgMul,splash:tl.splash||0,slowPow:(tl.slowPow||0)*slowMul,sp:pb});
+    playShoot();
+  }
+  for(var i=projs.length-1;i>=0;i--){
+    var p=projs[i];if(!p.tgt||p.tgt.hp<=0){projs.splice(i,1);continue;}
+    var dx=p.tgt.x-p.x,dy=p.tgt.y-p.y,dist=Math.hypot(dx,dy);drawProj(p);
+    if(dist<12){
+      if(p.splash){
+        boom(p.tgt.x,p.tgt.y,'#ff4444',12);boom(p.tgt.x,p.tgt.y,'#ffaa00',6);
+        for(var j=enemies.length-1;j>=0;j--)if(Math.hypot(enemies[j].x-p.tgt.x,enemies[j].y-p.tgt.y)<=p.splash){enemies[j].hp-=p.dmg;if(p.slowPow)enemies[j].slow=Math.max(enemies[j].slow,p.slowPow);if(enemies[j].hp<=0)killE(enemies[j]);}
+      } else {
+        boom(p.tgt.x,p.tgt.y,TLEVELS[p.tlvl].pc,6);p.tgt.hp-=p.dmg;if(p.slowPow)p.tgt.slow=Math.max(p.tgt.slow,p.slowPow);if(p.tgt.hp<=0)killE(p.tgt);
+      }
+      projs.splice(i,1);
+    } else {var spd2=9*p.sp*Math.min(dt,2);p.px=p.x;p.py=p.y;p.x+=dx/dist*spd2;p.y+=dy/dist*spd2;}
+  }
+  for(var i=parts.length-1;i>=0;i--){
+    var p=parts[i];p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=0.2*dt;p.life-=dt;
+    if(p.life<=0){parts.splice(i,1);continue;}
+    cx.globalAlpha=p.life/p.max;
+    if(p.ring){cx.strokeStyle=p.col;cx.lineWidth=4;cx.beginPath();cx.arc(p.x,p.y,p.sz*(1-p.life/p.max)+10,0,Math.PI*2);cx.stroke();}
+    else{cx.fillStyle=p.col;cx.beginPath();cx.arc(p.x,p.y,p.sz/2,0,Math.PI*2);cx.fill();}
+  }
+  cx.globalAlpha=1;
+  if(waveActive&&spawnQueue.length===0&&enemies.length===0){
+    waveActive=false;paused=false;
+    var b=wave*30;money+=b;hp=MAX_HP;upd();setEvBanner(null);
+    playSound('clear');
+    document.getElementById('wave-btn').textContent='▶ 웨이브 시작';
+    document.getElementById('pause-btn').disabled=true;
+    document.getElementById('pause-btn').textContent='⏸ 일시정지';
+    document.getElementById('pause-overlay').style.display='none';
+    hint('🎉 Round '+wave+' 클리어! +'+b+'💰 ❤️ 체력 회복! 3초 후 다음 라운드...');
+    previewNextWave();
+    setTimeout(function(){if(!waveActive)startWave();},3000);
+  }
+  loopId=requestAnimationFrame(loop);
+}
+
+function showGameOver(){
+  waveActive=false;
+  playSound('gameover');
+  document.getElementById('ov-title').textContent='⚠️ 창원시청 함락!';
+  document.getElementById('ov-body').textContent='민원 몬스터가 창원시청을 점령했어요!';
+  document.getElementById('stats-grid').innerHTML=
+    '<div class="stat-item">🌊 도달 라운드<strong>Round '+wave+'</strong></div>'+
+    '<div class="stat-item">💀 총 처치<strong>'+statKills+'마리</strong></div>'+
+    '<div class="stat-item">⭐ 최종 점수<strong>'+score+'점</strong></div>'+
+    '<div class="stat-item">🔥 최고 연속처치<strong>'+statMaxCombo+'마리</strong></div>'+
+    '<div class="stat-item">🏖️ 특별휴가 발동<strong>'+statVacCount+'회</strong></div>'+
+    '<div class="stat-item">📣 시장의 호통<strong>'+statHotongCount+'회</strong></div>';
+  document.getElementById('overlay').style.display='block';
+}
+
+initState();upd();
+startLoop();
+</script>
+</body>
+</html>
