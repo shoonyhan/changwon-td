@@ -129,12 +129,17 @@ body{background:#1a2035;color:#e0e0e0;font-family:sans-serif;overflow:hidden;tou
   <div style="width:1px;height:60px;background:#3a5a9a;margin:0 2px"></div>
   <div class="tbtn" id="vbtn" onclick="useVacation()">
     <div class="ico">🏖️</div><div class="nm" style="color:#4ade80;">특별휴가부여</div>
-    <div class="ct" id="vct" style="color:#888;">⭐0/500</div>
+    <div class="ct" id="vct" style="color:#888;">⭐0/1000</div>
     <div class="pw" style="color:#4ade80;">공속·탄속2배 2초</div>
+  </div>
+  <div class="tbtn" id="cbtn" onclick="useChueong()">
+    <div class="ico">💰</div><div class="nm" style="color:#fde68a;">추경편성</div>
+    <div class="ct" id="cct" style="color:#888;">⭐0/2000</div>
+    <div class="pw" style="color:#fde68a;">+5,000원 (라운드당 1회)</div>
   </div>
   <div class="tbtn" id="hbtn" onclick="useHotong()">
     <div class="ico">📣</div><div class="nm" style="color:#ff8c00;">시장의 호통</div>
-    <div class="ct" id="hct" style="color:#888;">⭐0/1000</div>
+    <div class="ct" id="hct" style="color:#888;">⭐0/3000</div>
     <div class="pw" style="color:#ff8c00;">공격력·공속·탄속3배+감속</div>
   </div>
   <div style="width:1px;height:60px;background:#3a5a9a;margin:0 2px"></div>
@@ -142,7 +147,7 @@ body{background:#1a2035;color:#e0e0e0;font-family:sans-serif;overflow:hidden;tou
 </div>
 <div id="hfx"></div><div id="vfx"></div>
 <div id="evbanner"></div><div id="preview"></div>
-<div id="madeby">made by HKS / v4.0</div>
+<div id="madeby">made by HKS / v4.1</div>
 <div id="hint">민원센터를 설치한 뒤 클릭해서 진화시키세요!</div>
 <div id="rbanner"></div>
 <div id="pause-overlay" onclick="togglePause()">⏸ 일시정지<br><span style="font-size:14px;color:#7aa8d0">클릭하면 계속</span></div>
@@ -163,8 +168,8 @@ body{background:#1a2035;color:#e0e0e0;font-family:sans-serif;overflow:hidden;tou
       <div class="tr"><div class="n">1️⃣</div><div class="d"><strong>민원센터(💰50) 설치 후 클릭해서 진화!</strong><br>📋민원센터→🖥️동사무소(+100)→📢사업소(+500)→🏛️구청(+1000, 최대5개)<br>진화할수록 강력해지며 구청은 진상몬스터·시의원 카운터!</div></div>
       <div class="tr"><div class="n">✨</div><div class="d"><strong>타워 시너지!</strong> 인접(150px) 타워끼리 조합하면 버프 발동!<br>📢사업소+🏛️구청 → 구청 공격력 <strong>+50%</strong> | 🖥️동사무소+📢사업소 → 슬로우 <strong>+40%</strong> | 📋/🖥️+🏛️구청 → 구청 공격속도 <strong>+25%</strong><br>🗺️ 매 게임마다 맵이 랜덤으로 바뀌니 배치 전략을 다시 생각하세요!</div></div>
       <div class="tr"><div class="n">2️⃣</div><div class="d"><strong>웨이브 시작</strong> — 라운드마다 강해짐. 5배수 🗳️선거시즌. 라운드3~부터 랜덤이벤트!</div></div>
-      <div class="tr"><div class="n">⚠️</div><div class="d">😤<strong>반복민원충</strong> 물량형 | 😡<strong>고함민원인</strong> 타워감속 | 👿<strong>진상몬스터</strong> 타워철거(구청에 취약!) | 📄<strong>시민의소리</strong> 고속형 | 🎩<strong>시의원</strong> 최고가타워철거(구청에 취약!) | 🏛️<strong>구청은 철거 면역!</strong><br>📮<strong>국민신문고</strong>(6R~) 고체력·고속 | 🪑<strong>자생단체</strong>(8R~) 광역마비 | 🔴<strong>시의원</strong> 타워철거형 | 🔵<strong>시의원</strong> 주변적 속도버프 | 👑<strong>시의장</strong>(정기의회 마지막) 빨간+파란의원 능력 2배</div></div>
-      <div class="tr"><div class="n">⭐</div><div class="d">⭐<strong>500개</strong>→🏖️특별휴가(공속·탄속2배 2초) | ⭐<strong>1000개</strong>→📣시장의 호통(공격력·공속·탄속3배+적감속)</div></div>
+      <div class="tr"><div class="n">⚠️</div><div class="d">😤<strong>반복민원충</strong> 물량형 | 😡<strong>고함민원인</strong> 타워감속 | 👿<strong>진상몬스터</strong> 타워철거(구청에 취약!) | 📄<strong>시민의소리</strong> 고속형 | 🎩<strong>시의원</strong> 최고가타워철거(구청에 취약!) | 🏛️<strong>구청은 철거 면역!</strong><br>📮<strong>국민신문고</strong>(6R~) 고체력·고속 | 🪑<strong>자생단체</strong>(8R~) 주변 몬스터 체력 30% 회복 | 🔴<strong>시의원</strong> 타워 10개 철거(구청포함) | 🔵<strong>시의원</strong> 타워 10개 마비+적버프 | 👑<strong>시의장</strong>(정기의회) 철거+마비 동시발동 | 🔍감사원감사/❄️예산동결 스킬봉쇄</div></div>
+      <div class="tr"><div class="n">⭐</div><div class="d">⭐<strong>1000개</strong>→🏖️특별휴가(공속·탄속2배 2초) | ⭐<strong>2000개</strong>→💰추경편성(+5,000원, 라운드당 1회) | ⭐<strong>3000개</strong>→📣시장의 호통(공격력·공속·탄속3배+적감속)</div></div>
     </div>
     <div class="ttrow">
       <div class="tt"><div class="ti">📋</div><div class="tn">민원센터</div><div class="td">💰50 기본</div></div>
@@ -172,7 +177,7 @@ body{background:#1a2035;color:#e0e0e0;font-family:sans-serif;overflow:hidden;tou
       <div class="tt" style="border-color:#c084fc44;"><div class="ti">📢</div><div class="tn">사업소</div><div class="td">+💰500 광역슬로우</div></div>
       <div class="tt" style="border-color:#f8717144;"><div class="ti">🏛️</div><div class="tn">구청(최대5)</div><div class="td">+💰1000 최종병기</div></div>
     </div>
-    <div style="font-size:10px;color:#aaa;margin-bottom:6px;">made by HKS / v4.0</div>
+    <div style="font-size:10px;color:#aaa;margin-bottom:6px;">made by HKS / v4.1</div>
     <button class="start-btn" onclick="startGame()">🎮 게임 시작!</button>
   </div>
 </div>
@@ -194,7 +199,7 @@ var TLEVELS=[
 ];
 var EVOLVE_COST=[100,500,1000];
 var GPOOL=['의창구청','성산구청','마산합포구청','마산회원구청','진해구청'];
-var REVTS=['고유가 피해지원금','민생소비쿠폰','재난지원금','정기의회','진해군항제 벚꽃축제','마산국화축제'];
+var REVTS=['고유가 피해지원금','민생소비쿠폰','재난지원금','정기의회','진해군항제 벚꽃축제','마산국화축제','감사원 감사','예산동결'];
 var MAX_HP=30;
 
 var EDEFS=[
@@ -204,10 +209,10 @@ var EDEFS=[
   {hp:84,  spd:0.65,rw:28, dmg:2,  col:'#94a3b8',sz:15,ico:'📄',tag:'📄 시민의소리'},
   {hp:1008,spd:0.30,rw:120,dmg:15, col:'#f59e0b',sz:27,ico:'🎩',tag:'🎩 시의원'},
   {hp:520, spd:0.98,rw:80, dmg:8,  col:'#38bdf8',sz:19,ico:'📮',tag:'📮 국민신문고'},
-  {hp:310, spd:0.55,rw:45, dmg:4,  col:'#86efac',sz:20,ico:'🪑',tag:'🪑 자생단체'},
-  {hp:800, spd:0.50,rw:100,dmg:12, col:'#ef4444',sz:25,ico:'🎩',tag:'🔴 시의원', red:true},
-  {hp:800, spd:0.50,rw:100,dmg:12, col:'#3b82f6',sz:25,ico:'🎩',tag:'🔵 시의원', blue:true},
-  {hp:1600,spd:0.45,rw:200,dmg:24, col:'#fbbf24',sz:30,ico:'🎩',tag:'👑 시의장', gold:true, red:true, blue:true},
+  {hp:310, spd:0.55,rw:45, dmg:4,  col:'#86efac',sz:20,ico:'🪑',tag:'🪑 자생단체', healer:true},
+  {hp:1600,spd:0.50,rw:100,dmg:12, col:'#ef4444',sz:25,ico:'🎩',tag:'🔴 시의원', red:true},
+  {hp:1600,spd:0.50,rw:100,dmg:12, col:'#3b82f6',sz:25,ico:'🎩',tag:'🔵 시의원', blue:true},
+  {hp:3200,spd:0.45,rw:200,dmg:24, col:'#fbbf24',sz:30,ico:'🎩',tag:'👑 시의장', gold:true, red:true, blue:true},
 ];
 
 var cv=document.getElementById('canvas');
@@ -275,7 +280,7 @@ var money,hp,score,wave,waveActive,paused;
 var towers,enemies,projs,parts;
 var selTower,sellMode,selectedTower;
 var spawnQueue,spawnTimer;
-var hotongOn,hotongT,vacOn,vacT,evHpMul,evFestival;
+var hotongOn,hotongT,vacOn,vacT,evHpMul,evFestival,skillLocked,chueongUsed;
 var gNames,gBuilt;
 var mouseX=-999,mouseY=-999;
 var statKills,statMaxCombo,statCurCombo,statVacCount,statHotongCount;
@@ -299,7 +304,7 @@ function initState(){
   towers=[];enemies=[];projs=[];parts=[];
   selTower=0;sellMode=false;selectedTower=null;
   spawnQueue=[];spawnTimer=0;
-  hotongOn=false;hotongT=0;vacOn=false;vacT=0;evHpMul=1;evFestival=false;
+  hotongOn=false;hotongT=0;vacOn=false;vacT=0;evHpMul=1;evFestival=false;skillLocked=false;chueongUsed=false;
   statKills=0;statMaxCombo=0;statCurCombo=0;statVacCount=0;statHotongCount=0;
   situHintCooldown=0;
   shuffleG();PATH=buildPath();
@@ -324,7 +329,7 @@ function initStateFromWave(targetWave){
   waveActive=false;paused=false;
   selTower=0;sellMode=false;selectedTower=null;
   spawnQueue=[];spawnTimer=0;
-  hotongOn=false;hotongT=0;vacOn=false;vacT=0;evHpMul=1;evFestival=false;
+  hotongOn=false;hotongT=0;vacOn=false;vacT=0;evHpMul=1;evFestival=false;skillLocked=false;chueongUsed=false;
   statKills=0;statMaxCombo=0;statCurCombo=0;statVacCount=0;statHotongCount=0;
   situHintCooldown=0;
   PATH=buildPath();
@@ -412,14 +417,22 @@ function upd(){
   document.getElementById('smoney').textContent=money;
   document.getElementById('shp').textContent=hp;
   document.getElementById('sscore').textContent=score;
+  var locked=skillLocked;
   var vb=document.getElementById('vbtn'),vc=document.getElementById('vct');
-  if(vacOn){vb.classList.remove('ready');vb.classList.add('active');vc.textContent='발동중! '+Math.ceil(vacT/60)+'초';vc.style.color='#4ade80';}
-  else if(score>=500){vb.classList.add('ready');vb.classList.remove('active');vc.textContent='⭐'+score+' 준비됨!';vc.style.color='#4ade80';}
-  else{vb.classList.remove('ready','active');vc.textContent='⭐'+score+'/500';vc.style.color='#888';}
+  if(locked){vb.classList.remove('ready','active');vc.textContent='🚫봉쇄됨';vc.style.color='#f87171';}
+  else if(vacOn){vb.classList.remove('ready');vb.classList.add('active');vc.textContent='발동중! '+Math.ceil(vacT/60)+'초';vc.style.color='#4ade80';}
+  else if(score>=1000){vb.classList.add('ready');vb.classList.remove('active');vc.textContent='⭐'+score+' 준비됨!';vc.style.color='#4ade80';}
+  else{vb.classList.remove('ready','active');vc.textContent='⭐'+score+'/1000';vc.style.color='#888';}
   var hb=document.getElementById('hbtn'),hc=document.getElementById('hct');
-  if(hotongOn){hb.classList.remove('ready');hb.classList.add('active');hc.textContent='발동중! '+Math.ceil(hotongT/60)+'초';hc.style.color='#ff8c00';}
-  else if(score>=1000){hb.classList.add('ready');hb.classList.remove('active');hc.textContent='⭐'+score+' 준비됨!';hc.style.color='#fb923c';}
-  else{hb.classList.remove('ready','active');hc.textContent='⭐'+score+'/1000';hc.style.color='#888';}
+  if(locked){hb.classList.remove('ready','active');hc.textContent='🚫봉쇄됨';hc.style.color='#f87171';}
+  else if(hotongOn){hb.classList.remove('ready');hb.classList.add('active');hc.textContent='발동중! '+Math.ceil(hotongT/60)+'초';hc.style.color='#ff8c00';}
+  else if(score>=3000){hb.classList.add('ready');hb.classList.remove('active');hc.textContent='⭐'+score+' 준비됨!';hc.style.color='#fb923c';}
+  else{hb.classList.remove('ready','active');hc.textContent='⭐'+score+'/3000';hc.style.color='#888';}
+  var cb=document.getElementById('cbtn'),cc=document.getElementById('cct');
+  if(locked){cb.classList.remove('ready','active');cc.textContent='🚫봉쇄됨';cc.style.color='#f87171';}
+  else if(chueongUsed){cb.classList.remove('ready','active');cc.textContent='✅이번 라운드 사용완료';cc.style.color='#888';}
+  else if(score>=2000){cb.classList.add('ready');cb.classList.remove('active');cc.textContent='⭐'+score+' 준비됨!';cc.style.color='#fde68a';}
+  else{cb.classList.remove('ready','active');cc.textContent='⭐'+score+'/2000';cc.style.color='#888';}
 }
 function hint(msg){
   var el=document.getElementById('hint');
@@ -553,7 +566,8 @@ function togglePause(){
   document.getElementById('pause-btn').textContent=paused?'▶ 계속':'⏸ 일시정지';
 }
 function useVacation(){
-  if(score<500||vacOn||hotongOn)return;
+  if(score<1000||vacOn||hotongOn)return;
+  if(skillLocked){hint('🚫 감사원 감사 중! 특별휴가를 사용할 수 없습니다!');return;}
   score-=500;vacOn=true;vacT=120;statVacCount++;upd();
   playSound('vacation');
   document.getElementById('vfx').style.display='block';
@@ -561,7 +575,8 @@ function useVacation(){
   showBanner('🏖️','#4ade80','자치행정과 공문-000호에 의거<br>전직원 특별휴가 부여!!!');
 }
 function useHotong(){
-  if(score<1000||hotongOn)return;
+  if(score<3000||hotongOn)return;
+  if(skillLocked){hint('🚫 예산동결 중! 시장의 호통을 사용할 수 없습니다!');return;}
   score-=1000;hotongOn=true;hotongT=180;statHotongCount++;
   for(var i=0;i<enemies.length;i++)enemies[i].spd*=0.5;
   upd();
@@ -569,6 +584,15 @@ function useHotong(){
   document.getElementById('hfx').style.display='block';
   setTimeout(function(){document.getElementById('hfx').style.display='none';},700);
   showBanner('📣','#ff8c00','시장실에 민원인 찾아오게 하지마!!!!');
+}
+function useChueong(){
+  if(score<2000){hint('⭐2000개 필요! 추경편성 불가!');return;}
+  if(skillLocked){hint('🚫 예산동결 중! 추경편성을 사용할 수 없습니다!');return;}
+  if(chueongUsed){hint('⚠️ 이 라운드에 이미 추경편성을 사용했습니다!');return;}
+  score-=2000;money+=5000;chueongUsed=true;upd();
+  playSound('clear');
+  showBanner('💰','#fde68a','추경편성 완료!<br>💰5,000원 긴급 지원!');
+  hint('💰 추경편성! +5,000원 지원! (이번 라운드 사용 완료)');
 }
 
 // ── 타워 시너지 시스템 ──
@@ -709,49 +733,67 @@ function destroyTower(t){
 }
 
 function pickType(maxT){
-  var t=Math.min(Math.floor(Math.random()*(1+Math.floor(wave/2))),maxT);
-  if(t===4)t=Math.random()<0.5?7:8;
+  var pool=[0,1];
+  if(wave>=4)pool.push(2); // 진상몬스터: 4라운드부터
+  pool.push(3); // 시민의소리는 항상
+  if(wave>=6){pool.push(7);pool.push(8);} // 빨간/파란의원: 6라운드부터
+  if(maxT>=5&&wave>=6)pool.push(5); // 국민신문고
+  if(maxT>=6&&wave>=8)pool.push(6); // 자생단체
+  if(pool.length===0)return 0;
+  var t=pool[Math.floor(Math.random()*pool.length)];
   return t;
 }
 function startWave(){
   if(waveActive)return;
+  // 라운드 30 제한
+  if(wave>=30){showClear();return;}
   wave++;waveActive=true;PATH=buildPath();
   savedWave=wave;
-  playSound('wave'); // ── 현재 라운드 저장 ──
-  spawnQueue=[];spawnTimer=0;evHpMul=1;evFestival=false;
+  playSound('wave');
+  spawnQueue=[];spawnTimer=0;evHpMul=1;evFestival=false;skillLocked=false;chueongUsed=false;
   var elec=(wave%5===0);
   var evIdx=-1;
   if(wave>=3){
     var roll=Math.random();
     if(roll<0.20&&wave>=7)evIdx=REVTS.indexOf('정기의회');
-    else if(roll<0.45){var ne=['고유가 피해지원금','민생소비쿠폰','재난지원금'];evIdx=REVTS.indexOf(ne[Math.floor(Math.random()*ne.length)]);}
-    else if(roll<0.60){var fe=['진해군항제 벚꽃축제','마산국화축제'];evIdx=REVTS.indexOf(fe[Math.floor(Math.random()*fe.length)]);}
+    else if(roll<0.40){var ne=['고유가 피해지원금','민생소비쿠폰','재난지원금'];evIdx=REVTS.indexOf(ne[Math.floor(Math.random()*ne.length)]);}
+    else if(roll<0.55){var fe=['진해군항제 벚꽃축제','마산국화축제'];evIdx=REVTS.indexOf(fe[Math.floor(Math.random()*fe.length)]);}
+    else if(roll<0.70&&wave>=5){var se=['감사원 감사','예산동결'];evIdx=REVTS.indexOf(se[Math.floor(Math.random()*se.length)]);}
   }
   var ev=evIdx>=0?REVTS[evIdx]:null;
   var mMul=1;
   if(elec)mMul*=2;
-  if(ev&&ev!=='정기의회'&&ev!=='진해군항제 벚꽃축제'&&ev!=='마산국화축제'){mMul*=2;evHpMul=1.5;}
+  if(ev==='고유가 피해지원금'||ev==='민생소비쿠폰'||ev==='재난지원금'){mMul*=2;evHpMul=2.0;}
   if(ev==='진해군항제 벚꽃축제'||ev==='마산국화축제'){mMul*=2;evFestival=true;}
+  if(ev==='감사원 감사'||ev==='예산동결'){skillLocked=true;}
   document.getElementById('swave').textContent='Round '+wave+(elec?' 🗳️선거시즌':'');
   document.getElementById('wave-btn').textContent='진행 중...';
   document.getElementById('pause-btn').disabled=false;
   if(elec)showBanner('🗳️ 선거시즌!','#f59e0b','Round '+wave+' — 민원 2배!');
   else if(ev==='진해군항제 벚꽃축제')showBanner('🌸 진해군항제!','#f9a8d4','몬스터 2배 · 타워 공격속도 -50%!');
   else if(ev==='마산국화축제')showBanner('🌼 마산국화축제!','#fde68a','몬스터 2배 · 타워 공격속도 -50%!');
+  else if(ev==='감사원 감사')showBanner('🔍 감사원 감사!','#f87171','이 라운드 스킬 사용 불가!');
+  else if(ev==='예산동결')showBanner('❄️ 예산동결!','#93c5fd','이 라운드 스킬 사용 불가!');
   else showBanner('ROUND '+wave);
   // 라운드별 경고 및 클리어 팁
-  if(wave===3)setTimeout(function(){hint('⚠️ 민원인의 공격이 시작됩니다! 타워를 경로에서 멀리 배치하세요!');},1200);
-  else if(wave===4)setTimeout(function(){hint('⚠️ 진상몬스터 출몰 구간! 동사무소 이상으로 진화하세요!');},1200);
-  else if(wave===5)setTimeout(function(){hint('⚠️ 선거시즌! 시의원이 타워를 파괴합니다! 구청 확보가 관건!');},1200);
+  if(wave===3)setTimeout(function(){hint('⚠️ 슬슬 어려워집니다! 타워를 경로에서 멀리 배치하세요!');},1200);
+  else if(wave===4)setTimeout(function(){hint('⚠️ 진상몬스터 등장! 동사무소 이상으로 진화하세요!');},1200);
+  else if(wave===5)setTimeout(function(){hint('⚠️ 선거시즌! 곧 시의원이 등장합니다! 구청 확보가 관건!');},1200);
+  else if(wave===6)setTimeout(function(){hint('⚠️ 시의원 등장! 구청으로 진화하면 3배 데미지!');},1200);
   else if(wave===7)setTimeout(function(){hint('💡 팁: ⭐500개 모이면 🏖️특별휴가로 공속 2배! 위기 때 사용하세요!');},1200);
   else if(wave===9)setTimeout(function(){hint('💡 팁: 구청을 경로에서 멀리 배치할수록 오래 살아남아요!');},1200);
+  else if(wave===10)setTimeout(function(){hint('🔥 Round 10 고비! 이 라운드를 넘기면 진짜 시작이다!');},1200);
+  else if(wave===15)setTimeout(function(){hint('🔥 Round 15 고비! 시의장이 더 자주 등장합니다!');},1200);
+  else if(wave===20)setTimeout(function(){hint('🔥 Round 20 고비! 구청 풀로 확보했나요?');},1200);
+  else if(wave===25)setTimeout(function(){hint('🔥 Round 25 고비! 마지막 5라운드만 버티면 클리어!');},1200);
   var ep=[];
   if(elec)ep.push('🗳️ 선거시즌');
   if(ev==='정기의회')ep.push('🏛️ [정기의회] — 빨간·파란의원 + 👑시의장 등장!');
   else if(ev==='진해군항제 벚꽃축제')ep.push('🌸 [진해군항제 벚꽃축제] — 몬스터 2배·타워 공격속도 -50%!');
   else if(ev==='마산국화축제')ep.push('🌼 [마산국화축제] — 몬스터 2배·타워 공격속도 -50%!');
-  else if(ev&&elec)ep.push('📢 ['+ev+'] — 몬스터 수 2배·체력 1.5배!');
-  else if(ev)ep.push('📢 ['+ev+'] — 몬스터 체력 1.5배!');
+  else if(ev==='감사원 감사')ep.push('🔍 [감사원 감사] — 스킬 사용 불가!');
+  else if(ev==='예산동결')ep.push('❄️ [예산동결] — 스킬 사용 불가!');
+  else if(ev==='고유가 피해지원금'||ev==='민생소비쿠폰'||ev==='재난지원금')ep.push('📢 ['+ev+'] — 몬스터 체력 2배!');
   setEvBanner(ep.length?ep.join(' | '):null);
   // 타입: 0반복민원충 1고함민원인 2진상몬스터 3시민의소리 5국민신문고 6자생단체 7빨간의원 8파란의원 9시의장
   // 시의원(4)은 제거됨 — 빨간/파란의원으로 대체
@@ -767,8 +809,8 @@ function startWave(){
     spawnQueue.push({delay:cc*150+300,type:9});
   } else {
     for(var i=0;i<cnt;i++){spawnQueue.push({delay:i*itv+Math.random()*10,type:pickType(maxET)});}
-    // 4라운드 배수마다 빨간/파란의원 1마리 추가
-    if(wave%4===0)spawnQueue.push({delay:cnt*itv+60,type:Math.random()<0.5?7:8});
+    // 4라운드 배수 + 6라운드 이상일 때 빨간/파란의원 1마리 추가
+    if(wave%4===0&&wave>=6)spawnQueue.push({delay:cnt*itv+60,type:Math.random()<0.5?7:8});
     // 국민신문고: 6라운드부터 등장
     if(wave>=6)spawnQueue.push({delay:cnt*itv+30,type:5});
     // 자생단체: 8라운드부터 등장
@@ -777,16 +819,31 @@ function startWave(){
 }
 function previewNextWave(){
   var nw=wave+1,elec=(nw%5===0);
-  var icons='',types=[],maxET=(nw>=5)?3:2;
-  for(var i=0;i<8;i++){var ei=Math.min(Math.floor(Math.random()*(1+Math.floor(nw/2))),maxET);if(types.indexOf(ei)<0){types.push(ei);icons+=EDEFS[ei].ico+' ';}}
+  var icons='',types=[],maxET=(nw>=8)?8:nw>=6?7:nw>=5?6:nw>=4?3:2;
+  for(var i=0;i<8;i++){
+    var ei=Math.min(Math.floor(Math.random()*(1+Math.floor(nw/2))),maxET);
+    if(ei===4)ei=Math.random()<0.5?7:8;
+    if(ei>=EDEFS.length)ei=0;
+    if(types.indexOf(ei)<0){types.push(ei);icons+=EDEFS[ei].ico+' ';}
+  }
   if(nw%4===0)icons+='🔴🔵 ';
   var rec=(nw%4===0||types.indexOf(2)>=0)?' → 🏛️ 구청 진화 권장!':types.indexOf(3)>=0?' → 📢 사업소 진화 권장!':'';
   showPreview('📋 Round '+nw+(elec?' 🗳️선거시즌':'')+' 예고: '+icons+rec);
   setTimeout(function(){showPreview(null);},3500);
 }
 function spawnOne(type){
+  if(type===undefined||type===null||type<0||type>=EDEFS.length||!EDEFS[type]){
+    console.warn('Invalid spawn type:',type);return;
+  }
   var d=EDEFS[type],h=d.hp*(1+wave*0.30)*evHpMul;
-  enemies.push({t:0,x:PATH[0].x,y:PATH[0].y,hp:h,maxHp:h,spd:d.spd*spdMul(wave),slow:0,rw:d.rw,dmg:d.dmg,col:d.col,sz:Math.round(d.sz*scl()),ico:d.ico,tag:d.tag,destroyCooldown:0});
+  var spd=d.spd*spdMul(wave);
+  enemies.push({
+    t:0,x:PATH[0].x,y:PATH[0].y,hp:h,maxHp:h,
+    spd:spd,baseSpd:spd,slow:0,rw:d.rw,dmg:d.dmg,
+    col:d.col,sz:Math.round(d.sz*scl()),ico:d.ico,tag:d.tag,
+    destroyCooldown:0,blueBuff:0,
+    healer:!!d.healer,red:!!d.red,blue:!!d.blue,gold:!!d.gold
+  });
 }
 function killE(e){
   score+=e.rw;money+=e.rw;statKills++;statCurCombo++;
@@ -1068,52 +1125,61 @@ function loop(ts){
     if(e.ico==='😡'){var cl=null,cd2=100;for(var j=0;j<towers.length;j++){var d2=Math.hypot(towers[j].x-e.x,towers[j].y-e.y);if(d2<cd2){cd2=d2;cl=towers[j];}}if(cl)cl.debuffed=true;}
     if(e.ico==='👿'){e.destroyCooldown-=dt;if(e.destroyCooldown<=0){var hit=false;for(var j=towers.length-1;j>=0;j--){if(towers[j].lvl===3)continue;if(Math.hypot(towers[j].x-e.x,towers[j].y-e.y)<Math.round(90*scl())&&Math.random()<0.20){towers[j].hp--;boom(towers[j].x,towers[j].y,'#ff4444',4);if(towers[j].hp<=0){destroyTower(towers[j]);}e.destroyCooldown=300;hit=true;break;}}if(!hit)e.destroyCooldown=60;}}
     if(e.ico==='🎩'){e.destroyCooldown-=dt;if(e.destroyCooldown<=0){var ex=null,mc=0;for(var j=0;j<towers.length;j++){if(towers[j].lvl===3)continue;if(Math.hypot(towers[j].x-e.x,towers[j].y-e.y)<Math.round(130*scl())&&!towers[j].bossHit&&getTotalCost(towers[j].lvl)>mc){mc=getTotalCost(towers[j].lvl);ex=towers[j];}}if(ex){ex.bossHit=true;ex.hp--;boom(ex.x,ex.y,'#ff4444',4);if(ex.hp<=0){destroyTower(ex);}e.destroyCooldown=180;}else e.destroyCooldown=180;}}
-    // 🪑 자생단체: 범위 내 타워 광역 마비 (paralyzed)
-    if(e.tag&&e.tag.indexOf('자생단체')>=0){
+    // 🪑 자생단체: 민원증폭 - 주변 50px 내 몬스터 체력 30% 회복
+    if(e.healer){
       e.destroyCooldown-=dt;
-      // 쿨타임 중 충전 표시 (범위 내 타워 있을 때)
-      var nearTower=false;
-      for(var j=0;j<towers.length;j++){if(Math.hypot(towers[j].x-e.x,towers[j].y-e.y)<Math.round(110*scl())){nearTower=true;break;}}
-      if(nearTower&&e.destroyCooldown>0){
-        // 충전 중 - 초록 점선 링
-        cx.save();cx.strokeStyle='rgba(134,239,172,'+Math.abs(Math.sin(e.destroyCooldown*0.2))*0.7+')';
+      // 충전 중 표시
+      var nearEnemy=false;
+      for(var j=0;j<enemies.length;j++){if(enemies[j]!==e&&Math.hypot(enemies[j].x-e.x,enemies[j].y-e.y)<Math.round(80*scl())){nearEnemy=true;break;}}
+      if(nearEnemy&&e.destroyCooldown>0){
+        cx.save();cx.strokeStyle='rgba(134,239,172,'+Math.abs(Math.sin(e.destroyCooldown*0.15))*0.8+')';
         cx.lineWidth=2;cx.setLineDash([4,4]);
-        cx.beginPath();cx.arc(e.x,e.y,Math.round(110*scl()),0,Math.PI*2);cx.stroke();
+        cx.beginPath();cx.arc(e.x,e.y,Math.round(80*scl()),0,Math.PI*2);cx.stroke();
         cx.setLineDash([]);cx.restore();
       }
       if(e.destroyCooldown<=0){
-        for(var j=0;j<towers.length;j++){
-          if(Math.hypot(towers[j].x-e.x,towers[j].y-e.y)<Math.round(110*scl())){
-            towers[j].paralyzed=90;
-            // 마비 발동 이펙트 - 번개
-            boom(towers[j].x,towers[j].y,'#86efac',8);
-            parts.push({x:towers[j].x,y:towers[j].y,vx:0,vy:0,life:25,max:25,col:'#86efac',sz:50,ring:true});
+        for(var j=0;j<enemies.length;j++){
+          if(enemies[j]!==e&&Math.hypot(enemies[j].x-e.x,enemies[j].y-e.y)<Math.round(80*scl())){
+            enemies[j].hp=Math.min(enemies[j].maxHp,enemies[j].hp+enemies[j].maxHp*0.30);
+            boom(enemies[j].x,enemies[j].y,'#86efac',5);
           }
         }
-        // 자생단체 발동 이펙트
-        boom(e.x,e.y,'#86efac',12);
-        playSound('destroy');
+        boom(e.x,e.y,'#4ade80',10);
         e.destroyCooldown=180;
       }
     }
-    // 🔴 빨간의원: 진상몬스터처럼 타워 철거 (HP 차감) + 구청 취약
-    if(e.red&&!e.gold){e.destroyCooldown-=dt;if(e.destroyCooldown<=0){var hit=false;for(var j=towers.length-1;j>=0;j--){if(towers[j].lvl===3)continue;if(Math.hypot(towers[j].x-e.x,towers[j].y-e.y)<Math.round(110*scl())&&Math.random()<0.30){towers[j].hp--;boom(towers[j].x,towers[j].y,'#ef4444',5);if(towers[j].hp<=0)destroyTower(towers[j]);e.destroyCooldown=240;hit=true;break;}}if(!hit)e.destroyCooldown=60;}}
-    // 🔵 파란의원: 주변 적 속도 버프 + 시각적 표시
-    if(e.blue){
+    // 🔴 빨간의원: 타워 10개 이상 부수기 (구청 포함), 쿨다운 3초(180프레임)
+    if(e.red&&!e.gold){
+      e.destroyCooldown-=dt;
+      if(e.destroyCooldown<=0){
+        var destroyed=0,maxDestroy=10;
+        for(var j=towers.length-1;j>=0;j--){
+          if(destroyed>=maxDestroy)break;
+          if(Math.hypot(towers[j].x-e.x,towers[j].y-e.y)<Math.round(130*scl())){
+            towers[j].hp--;boom(towers[j].x,towers[j].y,'#ef4444',5);
+            if(towers[j].hp<=0){destroyTower(towers[j]);}
+            destroyed++;
+          }
+        }
+        e.destroyCooldown=180;
+      }
+    }
+    // 🔵 파란의원: 주변 적 속도 버프(시각표시) + 쿨다운마다 타워 10개 마비
+    if(e.blue&&!e.gold){
+      e.destroyCooldown-=dt;
+      // 주변 적 속도 버프 (매 프레임 갱신하지 않고 blueBuff가 0일 때만 부여)
       var buffed=false;
       for(var j=0;j<enemies.length;j++){
         if(enemies[j]!==e&&Math.hypot(enemies[j].x-e.x,enemies[j].y-e.y)<Math.round(120*scl())){
-          enemies[j].blueBuff=60;buffed=true;
+          if(enemies[j].blueBuff<=0)enemies[j].blueBuff=90; // 이미 버프 중이면 갱신 안 함
+          buffed=true;
         }
       }
       if(buffed){
-        // 파란 버프 링 표시
         cx.save();
         cx.strokeStyle='rgba(96,165,250,0.5)';cx.lineWidth=2;
         cx.beginPath();cx.arc(e.x,e.y,Math.round(120*scl()),0,Math.PI*2);cx.stroke();
-        // 버프 받은 적들에게 파란 화살표 이펙트
-        cx.strokeStyle='rgba(96,165,250,0.8)';cx.lineWidth=1.5;
-        cx.setLineDash([3,3]);
+        cx.strokeStyle='rgba(96,165,250,0.8)';cx.lineWidth=1.5;cx.setLineDash([3,3]);
         for(var j=0;j<enemies.length;j++){
           if(enemies[j]!==e&&enemies[j].blueBuff>0&&Math.hypot(enemies[j].x-e.x,enemies[j].y-e.y)<Math.round(120*scl())){
             cx.beginPath();cx.moveTo(e.x,e.y);cx.lineTo(enemies[j].x,enemies[j].y);cx.stroke();
@@ -1121,8 +1187,50 @@ function loop(ts){
         }
         cx.setLineDash([]);cx.restore();
       }
+      // 쿨다운마다 타워 10개 마비
+      if(e.destroyCooldown<=0){
+        var paralyzed=0;
+        for(var j=0;j<towers.length;j++){
+          if(paralyzed>=10)break;
+          if(Math.hypot(towers[j].x-e.x,towers[j].y-e.y)<Math.round(130*scl())){
+            towers[j].paralyzed=180;
+            boom(towers[j].x,towers[j].y,'#3b82f6',5);
+            paralyzed++;
+          }
+        }
+        if(paralyzed>0)playSound('destroy');
+        e.destroyCooldown=180;
+      }
     }
-    if(e.blueBuff>0){e.blueBuff-=dt;e.spd=EDEFS[enemies.indexOf(e)>=0?enemies.indexOf(e):0].spd*(1+(e.blueBuff>0?0.4:0))*spdMul(wave)/pLen()*10;}
+    // 👑 시의장: 타워 10개 부수기(구청 포함) + 나머지 10개 마비, 쿨다운 3초
+    if(e.gold){
+      e.destroyCooldown-=dt;
+      if(e.destroyCooldown<=0){
+        // 먼저 10개 부수기 (구청 포함)
+        var destroyed=0;
+        for(var j=towers.length-1;j>=0;j--){
+          if(destroyed>=10)break;
+          if(Math.hypot(towers[j].x-e.x,towers[j].y-e.y)<Math.round(150*scl())){
+            towers[j].hp=0;destroyTower(towers[j]);destroyed++;
+          }
+        }
+        // 그 다음 나머지 10개 마비
+        var paralyzed=0;
+        for(var j=0;j<towers.length;j++){
+          if(paralyzed>=10)break;
+          if(Math.hypot(towers[j].x-e.x,towers[j].y-e.y)<Math.round(150*scl())){
+            towers[j].paralyzed=180;
+            boom(towers[j].x,towers[j].y,'#fbbf24',6);
+            paralyzed++;
+          }
+        }
+        boom(e.x,e.y,'#fbbf24',15);
+        playSound('destroy');
+        e.destroyCooldown=180;
+      }
+    }
+    if(e.blueBuff>0){e.blueBuff-=dt;if(e.baseSpd)e.spd=e.baseSpd*1.4;}
+    else if(e.baseSpd&&e.spd!==e.baseSpd&&!e.slow){e.spd=e.baseSpd;}
     drawEnemy(e);
   }
   var rb=hotongOn?1/3:vacOn?0.5:1,db=hotongOn?3:1,pb=hotongOn?3:vacOn?2:1;
@@ -1176,6 +1284,20 @@ function loop(ts){
   loopId=requestAnimationFrame(loop);
 }
 
+function showClear(){
+  waveActive=false;
+  document.getElementById('ov-title').textContent='🎉 창원시청 수호 완료!';
+  document.getElementById('ov-body').textContent='30라운드를 모두 버텨냈습니다! 당신은 진정한 민원처리 달인!';
+  document.getElementById('stats-grid').innerHTML=
+    '<div class="stat-item">🌊 도달 라운드<strong>Round 30 🏆</strong></div>'+
+    '<div class="stat-item">💀 총 처치<strong>'+statKills+'마리</strong></div>'+
+    '<div class="stat-item">⭐ 최종 점수<strong>'+score+'점</strong></div>'+
+    '<div class="stat-item">🔥 최고 연속처치<strong>'+statMaxCombo+'마리</strong></div>'+
+    '<div class="stat-item">🏖️ 특별휴가 발동<strong>'+statVacCount+'회</strong></div>'+
+    '<div class="stat-item">📣 시장의 호통<strong>'+statHotongCount+'회</strong></div>';
+  document.getElementById('overlay').style.display='block';
+  playSound('clear');
+}
 function showGameOver(){
   waveActive=false;
   playSound('gameover');
