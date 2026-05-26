@@ -147,7 +147,7 @@ body{background:#1a2035;color:#e0e0e0;font-family:sans-serif;overflow:hidden;tou
 </div>
 <div id="hfx"></div><div id="vfx"></div>
 <div id="evbanner"></div><div id="preview"></div>
-<div id="madeby">made by HKS / v4.1</div>
+<div id="madeby">made by HKS / v4.2</div>
 <div id="hint">민원센터를 설치한 뒤 클릭해서 진화시키세요!</div>
 <div id="rbanner"></div>
 <div id="pause-overlay" onclick="togglePause()">⏸ 일시정지<br><span style="font-size:14px;color:#7aa8d0">클릭하면 계속</span></div>
@@ -156,6 +156,8 @@ body{background:#1a2035;color:#e0e0e0;font-family:sans-serif;overflow:hidden;tou
   <div class="evo-stats" id="evo-stats"></div>
   <div class="evo-btns">
     <button class="btn-evo" id="evo-btn" onclick="doEvolve()">⬆️ 진화</button>
+    <button class="btn-evo" id="evo-atk-btn" onclick="doEvolveType('atk')" style="display:none;background:#3a1a1a;border-color:#f87171;color:#f87171;">⚔️ 공격형</button>
+    <button class="btn-evo" id="evo-def-btn" onclick="doEvolveType('def')" style="display:none;background:#1a1a4a;border-color:#60a5fa;color:#60a5fa;">🛡️ 방어형</button>
     <button class="btn-sell2" onclick="doSell()">🗑️ 판매</button>
     <button class="btn-close2" onclick="closeEvoPopup()">✕</button>
   </div>
@@ -177,15 +179,25 @@ body{background:#1a2035;color:#e0e0e0;font-family:sans-serif;overflow:hidden;tou
       <div class="tt" style="border-color:#c084fc44;"><div class="ti">📢</div><div class="tn">사업소</div><div class="td">+💰500 광역슬로우</div></div>
       <div class="tt" style="border-color:#f8717144;"><div class="ti">🏛️</div><div class="tn">구청(최대5)</div><div class="td">+💰1000 최종병기</div></div>
     </div>
-    <div style="font-size:10px;color:#aaa;margin-bottom:6px;">made by HKS / v4.1</div>
+    <div style="font-size:10px;color:#aaa;margin-bottom:6px;">made by HKS / v4.2</div>
+    <div style="margin-bottom:8px;">
+      <div style="font-size:11px;color:#90b8e0;margin-bottom:5px;">⚙️ 난이도 선택</div>
+      <div style="display:flex;gap:6px;justify-content:center;">
+        <button onclick="setDifficulty('easy')" id="diff-easy" style="flex:1;padding:5px;border-radius:6px;border:2px solid #4ade80;background:#1a4a2a;color:#4ade80;cursor:pointer;font-size:11px;">😊 쉬움<br><span style="font-size:9px;color:#aaa">적 체력 -30%</span></button>
+        <button onclick="setDifficulty('normal')" id="diff-normal" style="flex:1;padding:5px;border-radius:6px;border:2px solid #5aadff;background:#1a3a6a;color:#5aadff;cursor:pointer;font-size:11px;outline:3px solid #5aadff;">😐 보통<br><span style="font-size:9px;color:#aaa">기본 설정</span></button>
+        <button onclick="setDifficulty('hard')" id="diff-hard" style="flex:1;padding:5px;border-radius:6px;border:2px solid #f87171;background:#3a1a1a;color:#f87171;cursor:pointer;font-size:11px;">😈 어려움<br><span style="font-size:9px;color:#aaa">적 체력 +50%</span></button>
+      </div>
+    </div>
     <button class="start-btn" onclick="startGame()">🎮 게임 시작!</button>
   </div>
 </div>
 <div id="overlay">
   <h2 id="ov-title"></h2><p id="ov-body"></p>
   <div class="stats-grid" id="stats-grid"></div>
+  <div id="leaderboard" style="margin:8px 0;text-align:left;background:#0d1e3a;border-radius:8px;padding:8px 12px;font-size:11px;"></div>
   <div class="ov-btns">
     <button class="btn-wave" onclick="restartGame()">🔄 처음부터 시작</button>
+    <button onclick="shareKakao()" style="background:#fee500;border:none;border-radius:6px;padding:8px 14px;color:#3c1e1e;font-size:12px;font-weight:bold;cursor:pointer;">💬 카카오 공유</button>
   </div>
 </div>
 
@@ -473,13 +485,29 @@ function openEvoPopup(t,px,py){
     var cost=EVOLVE_COST[t.lvl];
     s+='<br>진화: '+tl.ico+'→'+next.ico+'<span> '+next.name+'</span> (💰'+cost+')';
     var eb=document.getElementById('evo-btn');
-    eb.disabled=(money<cost)||(t.lvl===2&&gBuilt>=5);
-    eb.textContent='⬆️ '+next.name+'로 진화 (💰'+cost+')';
-    if(t.lvl===2&&gBuilt>=5){eb.disabled=true;eb.textContent='구청 최대 5개!';}
+    var atkBtn=document.getElementById('evo-atk-btn');
+    var defBtn=document.getElementById('evo-def-btn');
+    // 사업소→구청 분기
+    if(t.lvl===2){
+      eb.style.display='none';
+      atkBtn.style.display='';defBtn.style.display='';
+      var canEvo=(money>=cost&&gBuilt<5);
+      atkBtn.disabled=!canEvo;defBtn.disabled=!canEvo;
+      if(gBuilt>=5){atkBtn.textContent='⚔️ 구청 최대!';defBtn.textContent='🛡️ 구청 최대!';}
+      else{atkBtn.textContent='⚔️ 공격형 구청 (💰'+cost+')';defBtn.textContent='🛡️ 방어형 구청 (💰'+cost+')';}
+      s+='<br>⚔️<span>공격형</span>: 데미지 +50%, 사거리 +30 | 🛡️<span>방어형</span>: HP 3개, 철거저항+';
+    } else {
+      eb.style.display='';
+      atkBtn.style.display='none';defBtn.style.display='none';
+      eb.disabled=(money<cost);
+      eb.textContent='⬆️ '+next.name+'로 진화 (💰'+cost+')';
+    }
   } else {
     s+='<br><span>✨ 최종 단계!</span>';
     document.getElementById('evo-btn').disabled=true;
     document.getElementById('evo-btn').textContent='최종 단계';
+    document.getElementById('evo-atk-btn').style.display='none';
+    document.getElementById('evo-def-btn').style.display='none';
   }
   document.getElementById('evo-stats').innerHTML=s;
   var pop=document.getElementById('evo-popup');
@@ -491,6 +519,43 @@ function openEvoPopup(t,px,py){
   pop.style.display='block';
 }
 function closeEvoPopup(){document.getElementById('evo-popup').style.display='none';selectedTower=null;}
+function doEvolveType(type){
+  if(!selectedTower||selectedTower.lvl!==2)return;
+  var cost=EVOLVE_COST[2];
+  if(money<cost){hint('예산 부족!');return;}
+  if(gBuilt>=5){hint('구청은 최대 5개!');return;}
+  var minDist=Math.round(300*scl());
+  for(var i=0;i<towers.length;i++){
+    if(towers[i]!==selectedTower&&towers[i].lvl===3){
+      if(Math.hypot(towers[i].x-selectedTower.x,towers[i].y-selectedTower.y)<minDist){
+        hint('🏛️ 구청끼리는 '+minDist+'px 이상 떨어져야 합니다!');return;
+      }
+    }
+  }
+  if(nearPath(selectedTower.x,selectedTower.y,Math.round(130*scl()))){
+    hintWarn('⚠️ 경로와 너무 가깝습니다! 구청은 진상몬스터·시의원 표적이 될 수 있어요!');
+  }
+  money-=cost;
+  selectedTower.lvl=3;
+  selectedTower.evolveType=type; // 'atk' or 'def'
+  var newTl=TLEVELS[3];
+  if(type==='atk'){
+    selectedTower.atkBoost=1.5; // 데미지 +50%
+    selectedTower.rangeBoost=30; // 사거리 +30
+    selectedTower.hp=999;selectedTower.maxHp=999;
+  } else {
+    selectedTower.hp=3;selectedTower.maxHp=3; // HP 3개
+    selectedTower.defType=true;
+  }
+  if(!gNames||gBuilt>=gNames.length)shuffleG();
+  selectedTower.label=(type==='atk'?'⚔️':'🛡️')+gNames[gBuilt];
+  gBuilt++;
+  selectedTower.bossHit=false;
+  boom(selectedTower.x,selectedTower.y,'#4ade80',12);
+  boom(selectedTower.x,selectedTower.y,'#ffd700',8);
+  playSound('evolve');
+  closeEvoPopup();upd();
+}
 function doEvolve(){
   if(!selectedTower||selectedTower.lvl>=3)return;
   var cost=EVOLVE_COST[selectedTower.lvl];
@@ -835,7 +900,7 @@ function spawnOne(type){
   if(type===undefined||type===null||type<0||type>=EDEFS.length||!EDEFS[type]){
     console.warn('Invalid spawn type:',type);return;
   }
-  var d=EDEFS[type],h=d.hp*(1+wave*0.30)*evHpMul;
+  var d=EDEFS[type],h=d.hp*(1+wave*0.30)*evHpMul*(diffMul[difficulty]||1.0);
   var spd=d.spd*spdMul(wave);
   enemies.push({
     t:0,x:PATH[0].x,y:PATH[0].y,hp:h,maxHp:h,
@@ -860,7 +925,65 @@ function killE(e){
   boom(e.x,e.y,e.col,8);
   var i=enemies.indexOf(e);if(i>=0)enemies.splice(i,1);upd();
 }
-// ── 음향 시스템 (Web Audio API) ──
+// ── 난이도 설정 ──
+var difficulty='normal';
+var diffMul={easy:0.7, normal:1.0, hard:1.5};
+function setDifficulty(d){
+  difficulty=d;
+  ['easy','normal','hard'].forEach(function(x){
+    var el=document.getElementById('diff-'+x);
+    if(!el)return;
+    el.style.outline=x===d?'3px solid #fff':'none';
+    el.style.opacity=x===d?'1':'0.6';
+  });
+}
+
+// ── 리더보드 (localStorage) ──
+function saveScore(isCleared){
+  try{
+    var records=JSON.parse(localStorage.getItem('cwTD_records')||'[]');
+    var diffLabel={'easy':'쉬움','normal':'보통','hard':'어려움'}[difficulty]||'보통';
+    records.push({wave:wave,score:score,kills:statKills,diff:diffLabel,date:new Date().toLocaleDateString('ko-KR'),cleared:isCleared});
+    records.sort(function(a,b){return b.score-a.score;});
+    records=records.slice(0,5);
+    localStorage.setItem('cwTD_records',JSON.stringify(records));
+    return records;
+  }catch(e){return [];}
+}
+function renderLeaderboard(records){
+  var el=document.getElementById('leaderboard');
+  if(!records||!records.length){if(el)el.style.display='none';return;}
+  if(el){
+    el.style.display='block';
+    var html='<div style="color:#ffd700;font-weight:bold;margin-bottom:4px;">🏆 내 최고 기록 TOP5</div>';
+    records.forEach(function(r,i){
+      var medal=['🥇','🥈','🥉','4️⃣','5️⃣'][i];
+      html+=medal+' Round '+r.wave+(r.cleared?' 🏆':'')
+        +' | ⭐'+r.score
+        +' | <span style="color:#aaa">'+r.diff+' · '+r.date+'</span><br>';
+    });
+    el.innerHTML=html;
+  }
+}
+
+// ── 카카오톡 공유 ──
+function shareKakao(){
+  var isCleared=wave>=30;
+  var text='🏛️ 민원 몬스터 타워 디펜스\n'
+    +(isCleared?'🎉 30라운드 완전 클리어!':'⚔️ Round '+wave+' 도달!')
+    +'\n⭐점수: '+score+'점 | 💀처치: '+statKills+'마리'
+    +'\n창원시청을 지켜라! 👉 https://shoonyhan.github.io/changwon-td';
+  if(navigator.share){
+    navigator.share({title:'민원 몬스터 타워 디펜스',text:text,url:'https://shoonyhan.github.io/changwon-td'}).catch(function(){});
+  } else {
+    navigator.clipboard.writeText(text).then(function(){
+      hint('📋 클립보드에 복사됐어요! 카카오톡에 붙여넣기 하세요!');
+    }).catch(function(){
+      window.open('https://shoonyhan.github.io/changwon-td','_blank');
+    });
+  }
+}
+
 var _ac=null;
 var soundOn=true;
 function getAC(){
@@ -1084,7 +1207,12 @@ function drawEnemy(e){
   cx.fillStyle='#fff';cx.fillText(e.tag,e.x,ty);cx.restore();
   var bw=e.sz*3,bh=5,bx=e.x-bw/2,by=e.y-e.sz-28;
   cx.fillStyle='#334466';cx.fillRect(bx,by,bw,bh);
-  var p=e.hp/e.maxHp;cx.fillStyle=p>0.6?'#4ade80':p>0.3?'#fbbf24':'#f87171';cx.fillRect(bx,by,bw*p,bh);
+  var p=e.hp/e.maxHp;
+  var barCol;
+  if(e.gold)barCol=p>0.5?'#fbbf24':'#f59e0b'; // 시의장: 황금
+  else if(e.red||e.blue)barCol=p>0.5?'#f87171':'#ef4444'; // 시의원: 빨강
+  else barCol=p>0.6?'#4ade80':p>0.3?'#fbbf24':'#f87171'; // 일반: 초록→노랑→빨강
+  cx.fillStyle=barCol;cx.fillRect(bx,by,bw*p,bh);
   cx.strokeStyle='rgba(255,255,255,0.2)';cx.lineWidth=1;cx.strokeRect(bx,by,bw,bh);
 }
 function drawProj(p){
@@ -1242,8 +1370,13 @@ function loop(ts){
     for(var j=0;j<enemies.length;j++)if(Math.hypot(enemies[j].x-t.x,enemies[j].y-t.y)<=tl.range*scl()&&enemies[j].t>best){best=enemies[j].t;tgt=enemies[j];}
     if(!tgt)continue;
     t.cd=tl.rate*(t.rateSyn||1)*rb*(t.debuffed?1.4:1)*(evFestival?2.0:1);
-    var dmgMul=db*(t.dmgSyn||1);
+    var dmgMul=db*(t.dmgSyn||1)*(t.atkBoost||1);
     if(t.lvl===3&&(tgt.ico==='👿'||tgt.ico==='🎩'||tgt.red||tgt.blue))dmgMul*=(tl.counterDmg||3);
+    var slowMul=t.slowSyn||1;
+    var tRange=tl.range*scl()*(t.rangeBoost?((tl.range+t.rangeBoost)/tl.range):1);
+    var tgt2=null,best2=-1;
+    for(var j=0;j<enemies.length;j++)if(Math.hypot(enemies[j].x-t.x,enemies[j].y-t.y)<=tRange&&enemies[j].t>best2){best2=enemies[j].t;tgt2=enemies[j];}
+    if(tgt2)tgt=tgt2;
     var slowMul=t.slowSyn||1;
     projs.push({x:t.x,y:t.y,px:t.x,py:t.y,tgt:tgt,tlvl:t.lvl,dmg:tl.dmg*dmgMul,splash:tl.splash||0,slowPow:(tl.slowPow||0)*slowMul,sp:pb});
     playShoot();
@@ -1286,6 +1419,7 @@ function loop(ts){
 
 function showClear(){
   waveActive=false;
+  var records=saveScore(true);
   document.getElementById('ov-title').textContent='🎉 창원시청 수호 완료!';
   document.getElementById('ov-body').textContent='30라운드를 모두 버텨냈습니다! 당신은 진정한 민원처리 달인!';
   document.getElementById('stats-grid').innerHTML=
@@ -1295,11 +1429,13 @@ function showClear(){
     '<div class="stat-item">🔥 최고 연속처치<strong>'+statMaxCombo+'마리</strong></div>'+
     '<div class="stat-item">🏖️ 특별휴가 발동<strong>'+statVacCount+'회</strong></div>'+
     '<div class="stat-item">📣 시장의 호통<strong>'+statHotongCount+'회</strong></div>';
+  renderLeaderboard(records);
   document.getElementById('overlay').style.display='block';
   playSound('clear');
 }
 function showGameOver(){
   waveActive=false;
+  var records=saveScore(false);
   playSound('gameover');
   document.getElementById('ov-title').textContent='⚠️ 창원시청 함락!';
   document.getElementById('ov-body').textContent='민원 몬스터가 창원시청을 점령했어요!';
@@ -1310,6 +1446,7 @@ function showGameOver(){
     '<div class="stat-item">🔥 최고 연속처치<strong>'+statMaxCombo+'마리</strong></div>'+
     '<div class="stat-item">🏖️ 특별휴가 발동<strong>'+statVacCount+'회</strong></div>'+
     '<div class="stat-item">📣 시장의 호통<strong>'+statHotongCount+'회</strong></div>';
+  renderLeaderboard(records);
   document.getElementById('overlay').style.display='block';
 }
 
