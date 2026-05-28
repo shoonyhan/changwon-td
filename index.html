@@ -118,7 +118,6 @@ body{background:#1a2035;color:#e0e0e0;font-family:sans-serif;overflow:hidden;tou
   <div class="stat">🌊 <span id="swave">Round 0</span></div>
   <div class="stat">⭐ <span id="sscore">0</span></div>
   <button id="pause-btn" onclick="togglePause()" disabled>⏸ 일시정지</button>
-  <button id="speed-btn" onclick="toggleSpeed()" style="border-radius:6px;padding:5px 8px;cursor:pointer;font-size:12px;border:1px solid #3a5a9a;background:#243560;color:#90c8f0;">▶▶ 1x</button>
   <button id="wave-btn" onclick="startWave()">▶ 웨이브 시작</button>
   <button id="sound-btn" onclick="toggleSound()" style="border-radius:6px;padding:5px 8px;cursor:pointer;font-size:12px;border:1px solid #3a5a9a;background:#243560;color:#90c8f0;">🔊</button>
 </div>
@@ -531,7 +530,7 @@ function doEvolveType(type){
   var cost=EVOLVE_COST[2];
   if(money<cost){hint('예산 부족!');return;}
   if(gBuilt>=5){hint('구청은 최대 5개!');return;}
-  var minDist=Math.round(300*scl());
+  var minDist=isMobile()?100:300;
   for(var i=0;i<towers.length;i++){
     if(towers[i]!==selectedTower&&towers[i].lvl===3){
       if(Math.hypot(towers[i].x-selectedTower.x,towers[i].y-selectedTower.y)<minDist){
@@ -570,7 +569,7 @@ function doEvolve(){
   if(selectedTower.lvl===2&&gBuilt>=5){hint('구청은 최대 5개!');return;}
   // 구청 진화 시 다른 구청과 최소 거리 체크
   if(selectedTower.lvl===2){
-    var minDist=Math.round(300*scl());
+  var minDist=isMobile()?100:300;
     for(var i=0;i<towers.length;i++){
       if(towers[i]!==selectedTower&&towers[i].lvl===3){
         if(Math.hypot(towers[i].x-selectedTower.x,towers[i].y-selectedTower.y)<minDist){
@@ -630,14 +629,6 @@ function toggleSound(){
   soundOn=!soundOn;
   document.getElementById('sound-btn').textContent=soundOn?'🔊':'🔇';
   document.getElementById('sound-btn').style.color=soundOn?'#90c8f0':'#f87171';
-}
-var gameSpeed=1;
-function toggleSpeed(){
-  gameSpeed=gameSpeed===1?2:gameSpeed===2?3:1;
-  var btn=document.getElementById('speed-btn');
-  if(gameSpeed===1){btn.textContent='▶▶ 1x';btn.style.color='#90c8f0';btn.style.borderColor='#3a5a9a';}
-  else if(gameSpeed===2){btn.textContent='▶▶ 2x';btn.style.color='#fbbf24';btn.style.borderColor='#fbbf24';}
-  else{btn.textContent='▶▶ 3x';btn.style.color='#f87171';btn.style.borderColor='#f87171';}
 }
 function togglePause(){
   if(!waveActive)return;
@@ -1278,7 +1269,7 @@ var loopId=null;
 function stopLoop(){if(loopId){cancelAnimationFrame(loopId);loopId=null;}}
 function startLoop(){stopLoop();last=0;loopId=requestAnimationFrame(loop);}
 function loop(ts){
-  var dt=Math.min((ts-last)/16.67,3)*gameSpeed;last=ts;
+  var dt=Math.min((ts-last)/16.67,3);last=ts;
   drawBG();drawRoad();
   if(document.getElementById('tut').style.display==='flex'){loopId=requestAnimationFrame(loop);return;}
   drawRangePrev();
