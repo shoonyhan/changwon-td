@@ -90,8 +90,9 @@ body{background:#1a2035;color:#e0e0e0;font-family:sans-serif;overflow:hidden;tou
   .stats-grid{grid-template-columns:1fr 1fr;gap:4px;}
   .stat-item{padding:6px 8px;font-size:11px;}
   .stat-item strong{font-size:12px;}
-  #evo-popup{min-width:180px;padding:10px 12px;}
+  #evo-popup{min-width:180px;padding:10px 12px;max-width:92vw;}
   .evo-stats{font-size:10px;}
+  .evo-btns button{padding:8px 4px;font-size:11px;min-height:36px;}
   #hint{font-size:11px;}
   #rbanner{font-size:48px;}
   #tbox{padding:10px 12px;max-height:88vh;}
@@ -117,6 +118,7 @@ body{background:#1a2035;color:#e0e0e0;font-family:sans-serif;overflow:hidden;tou
   <div class="stat">🌊 <span id="swave">Round 0</span></div>
   <div class="stat">⭐ <span id="sscore">0</span></div>
   <button id="pause-btn" onclick="togglePause()" disabled>⏸ 일시정지</button>
+  <button id="speed-btn" onclick="toggleSpeed()" style="border-radius:6px;padding:5px 8px;cursor:pointer;font-size:12px;border:1px solid #3a5a9a;background:#243560;color:#90c8f0;">▶▶ 1x</button>
   <button id="wave-btn" onclick="startWave()">▶ 웨이브 시작</button>
   <button id="sound-btn" onclick="toggleSound()" style="border-radius:6px;padding:5px 8px;cursor:pointer;font-size:12px;border:1px solid #3a5a9a;background:#243560;color:#90c8f0;">🔊</button>
 </div>
@@ -331,7 +333,12 @@ function initStateFromWave(targetWave){
   for(var i=0;i<towers.length;i++){
     if(towers[i].lvl===3)gBuilt++;
     towers[i].cd=0;towers[i].debuffed=false;towers[i].bossHit=false;towers[i].destroyCooldown=0;towers[i].paralyzed=0;
-    towers[i].hp=TLEVELS[towers[i].lvl].maxHp;towers[i].maxHp=TLEVELS[towers[i].lvl].maxHp;
+    // 방어형 구청은 HP 3개 유지, 나머지는 정상 초기화
+    if(towers[i].lvl===3&&towers[i].evolveType==='def'){
+      towers[i].hp=3;towers[i].maxHp=3;
+    } else {
+      towers[i].hp=TLEVELS[towers[i].lvl].maxHp;towers[i].maxHp=TLEVELS[towers[i].lvl].maxHp;
+    }
   }
   // 돈·체력 리셋
   money=300+targetWave*30;
@@ -495,7 +502,7 @@ function openEvoPopup(t,px,py){
       atkBtn.disabled=!canEvo;defBtn.disabled=!canEvo;
       if(gBuilt>=5){atkBtn.textContent='⚔️ 구청 최대!';defBtn.textContent='🛡️ 구청 최대!';}
       else{atkBtn.textContent='⚔️ 공격형 구청 (💰'+cost+')';defBtn.textContent='🛡️ 방어형 구청 (💰'+cost+')';}
-      s+='<br>⚔️<span>공격형</span>: 데미지 +50%, 사거리 +30 | 🛡️<span>방어형</span>: HP 3개, 철거저항+';
+      s+='<br>⚔️<span>공격형</span>: 데미지 +50%, 사거리 +30 | 🛡️<span>방어형</span>: HP 3개, 철거가능, 주변타워 데미지+20%';
     } else {
       eb.style.display='';
       atkBtn.style.display='none';defBtn.style.display='none';
@@ -624,6 +631,14 @@ function toggleSound(){
   document.getElementById('sound-btn').textContent=soundOn?'🔊':'🔇';
   document.getElementById('sound-btn').style.color=soundOn?'#90c8f0':'#f87171';
 }
+var gameSpeed=1;
+function toggleSpeed(){
+  gameSpeed=gameSpeed===1?2:gameSpeed===2?3:1;
+  var btn=document.getElementById('speed-btn');
+  if(gameSpeed===1){btn.textContent='▶▶ 1x';btn.style.color='#90c8f0';btn.style.borderColor='#3a5a9a';}
+  else if(gameSpeed===2){btn.textContent='▶▶ 2x';btn.style.color='#fbbf24';btn.style.borderColor='#fbbf24';}
+  else{btn.textContent='▶▶ 3x';btn.style.color='#f87171';btn.style.borderColor='#f87171';}
+}
 function togglePause(){
   if(!waveActive)return;
   paused=!paused;
@@ -692,6 +707,9 @@ function calcSynergies(){
         gu2.rateSyn=Math.max(gu2.rateSyn,0.75); // rate가 낮을수록 빠름
         gu2.synLabels.push('⚡빠름');
       }
+      // 방어형 구청 → 주변 타워 데미지 +20% 버프
+      if(a.lvl===3&&a.defType&&b.lvl<3){b.dmgSyn=Math.max(b.dmgSyn,1.2);b.synLabels.push('🛡️+20%');}
+      if(b.lvl===3&&b.defType&&a.lvl<3){a.dmgSyn=Math.max(a.dmgSyn,1.2);a.synLabels.push('🛡️+20%');}
     }
   }
 }
@@ -850,7 +868,11 @@ function startWave(){
   else if(wave===10)setTimeout(function(){hint('🔥 Round 10 고비! 이 라운드를 넘기면 진짜 시작이다!');},1200);
   else if(wave===15)setTimeout(function(){hint('🔥 Round 15 고비! 시의장이 더 자주 등장합니다!');},1200);
   else if(wave===20)setTimeout(function(){hint('🔥 Round 20 고비! 구청 풀로 확보했나요?');},1200);
-  else if(wave===25)setTimeout(function(){hint('🔥 Round 25 고비! 마지막 5라운드만 버티면 클리어!');},1200);
+  else if(wave===25){
+    setTimeout(function(){hint('🔥 Round 25! 마지막 5라운드! 모든 민원인이 총공세를 펼칩니다!');},1200);
+    showBanner('🔥 최후의 총공세!','#f87171','Round 25 — 모든 몬스터 등장!');
+    mMul*=1.5; evHpMul*=1.5; // 25라운드: 수 1.5배 + 체력 1.5배
+  }
   var ep=[];
   if(elec)ep.push('🗳️ 선거시즌');
   if(ev==='정기의회')ep.push('🏛️ [정기의회] — 빨간·파란의원 + 👑시의장 등장!');
@@ -1137,10 +1159,34 @@ function drawRangePrev(){
 function drawTower(t){
   var tl=TLEVELS[t.lvl];
   var sz=Math.round((20+t.lvl*4)*scl());
-  cx.shadowColor=tl.col;cx.shadowBlur=10+t.lvl*8;cx.fillStyle=tl.col+'55';
+  // 구청 분기 색상
+  var baseCol=tl.col;
+  if(t.lvl===3&&t.evolveType==='atk') baseCol='#ff6b35'; // 공격형: 주황
+  if(t.lvl===3&&t.evolveType==='def') baseCol='#60a5fa'; // 방어형: 파랑
+  cx.shadowColor=baseCol;cx.shadowBlur=10+t.lvl*8;cx.fillStyle=baseCol+'55';
   cx.beginPath();cx.arc(t.x,t.y,sz,0,Math.PI*2);cx.fill();
-  cx.strokeStyle=tl.col;cx.lineWidth=2+t.lvl;
+  cx.strokeStyle=baseCol;cx.lineWidth=2+t.lvl;
   cx.beginPath();cx.arc(t.x,t.y,sz,0,Math.PI*2);cx.stroke();
+  // 공격형: 외곽 뾰족 선(방사형)
+  if(t.lvl===3&&t.evolveType==='atk'){
+    cx.strokeStyle='#ff6b35';cx.lineWidth=1.5;
+    for(var a=0;a<8;a++){
+      var ang=a*Math.PI/4;
+      cx.beginPath();cx.moveTo(t.x+Math.cos(ang)*(sz+4),t.y+Math.sin(ang)*(sz+4));
+      cx.lineTo(t.x+Math.cos(ang)*(sz+10),t.y+Math.sin(ang)*(sz+10));cx.stroke();
+    }
+  }
+  // 방어형: 두꺼운 방패 테두리
+  if(t.lvl===3&&t.evolveType==='def'){
+    cx.strokeStyle='#60a5fa';cx.lineWidth=4;cx.globalAlpha=0.5;
+    cx.beginPath();cx.arc(t.x,t.y,sz+6,0,Math.PI*2);cx.stroke();
+    cx.globalAlpha=1;
+    // HP바 항상 표시
+    var bw=sz*2,bh=4,bx=t.x-bw/2,by=t.y-sz-10;
+    cx.fillStyle='#333';cx.fillRect(bx,by,bw,bh);
+    cx.fillStyle='#60a5fa';
+    cx.fillRect(bx,by,bw*(t.hp/t.maxHp),bh);
+  }
   if(t.lvl===2){
     cx.strokeStyle=tl.col+'44';cx.lineWidth=1;
     cx.beginPath();cx.arc(t.x,t.y,tl.range*scl(),0,Math.PI*2);cx.stroke();
@@ -1152,7 +1198,11 @@ function drawTower(t){
   cx.shadowBlur=0;
   cx.font=(14+t.lvl*3)+'px serif';cx.textAlign='center';cx.textBaseline='middle';cx.fillText(tl.ico,t.x,t.y);
   var nm=t.lvl===3&&t.label?t.label:tl.name;
-  cx.font='10px sans-serif';cx.fillStyle='rgba(200,230,255,0.9)';cx.textBaseline='top';cx.fillText(nm,t.x,t.y+sz+2);
+  // 공격형/방어형 이름 색상 구분
+  var nmCol='rgba(200,230,255,0.9)';
+  if(t.lvl===3&&t.evolveType==='atk')nmCol='#ff6b35';
+  if(t.lvl===3&&t.evolveType==='def')nmCol='#60a5fa';
+  cx.font='10px sans-serif';cx.fillStyle=nmCol;cx.textBaseline='top';cx.fillText(nm,t.x,t.y+sz+2);
   // 시너지 활성 표시
   if(t.synLabels&&t.synLabels.length>0){
     cx.shadowBlur=0;cx.strokeStyle='#fde68a';cx.lineWidth=2;
@@ -1228,7 +1278,7 @@ var loopId=null;
 function stopLoop(){if(loopId){cancelAnimationFrame(loopId);loopId=null;}}
 function startLoop(){stopLoop();last=0;loopId=requestAnimationFrame(loop);}
 function loop(ts){
-  var dt=Math.min((ts-last)/16.67,3);last=ts;
+  var dt=Math.min((ts-last)/16.67,3)*gameSpeed;last=ts;
   drawBG();drawRoad();
   if(document.getElementById('tut').style.display==='flex'){loopId=requestAnimationFrame(loop);return;}
   drawRangePrev();
@@ -1251,8 +1301,8 @@ function loop(ts){
     if(e.slow>0)e.slow-=dt;
     for(var j=0;j<towers.length;j++){if(towers[j].lvl===2&&Math.hypot(towers[j].x-e.x,towers[j].y-e.y)<=TLEVELS[2].range)e.slow=Math.max(e.slow,60);}
     if(e.ico==='😡'){var cl=null,cd2=100;for(var j=0;j<towers.length;j++){var d2=Math.hypot(towers[j].x-e.x,towers[j].y-e.y);if(d2<cd2){cd2=d2;cl=towers[j];}}if(cl)cl.debuffed=true;}
-    if(e.ico==='👿'){e.destroyCooldown-=dt;if(e.destroyCooldown<=0){var hit=false;for(var j=towers.length-1;j>=0;j--){if(towers[j].lvl===3)continue;if(Math.hypot(towers[j].x-e.x,towers[j].y-e.y)<Math.round(90*scl())&&Math.random()<0.20){towers[j].hp--;boom(towers[j].x,towers[j].y,'#ff4444',4);if(towers[j].hp<=0){destroyTower(towers[j]);}e.destroyCooldown=300;hit=true;break;}}if(!hit)e.destroyCooldown=60;}}
-    if(e.ico==='🎩'){e.destroyCooldown-=dt;if(e.destroyCooldown<=0){var ex=null,mc=0;for(var j=0;j<towers.length;j++){if(towers[j].lvl===3)continue;if(Math.hypot(towers[j].x-e.x,towers[j].y-e.y)<Math.round(130*scl())&&!towers[j].bossHit&&getTotalCost(towers[j].lvl)>mc){mc=getTotalCost(towers[j].lvl);ex=towers[j];}}if(ex){ex.bossHit=true;ex.hp--;boom(ex.x,ex.y,'#ff4444',4);if(ex.hp<=0){destroyTower(ex);}e.destroyCooldown=180;}else e.destroyCooldown=180;}}
+    if(e.ico==='👿'){e.destroyCooldown-=dt;if(e.destroyCooldown<=0){var hit=false;for(var j=towers.length-1;j>=0;j--){if(towers[j].lvl===3&&!towers[j].defType)continue;if(Math.hypot(towers[j].x-e.x,towers[j].y-e.y)<Math.round(90*scl())&&Math.random()<0.20){towers[j].hp--;boom(towers[j].x,towers[j].y,'#ff4444',4);if(towers[j].hp<=0){destroyTower(towers[j]);}e.destroyCooldown=300;hit=true;break;}}if(!hit)e.destroyCooldown=60;}}
+    if(e.ico==='🎩'){e.destroyCooldown-=dt;if(e.destroyCooldown<=0){var ex=null,mc=0;for(var j=0;j<towers.length;j++){if(towers[j].lvl===3&&!towers[j].defType)continue;if(Math.hypot(towers[j].x-e.x,towers[j].y-e.y)<Math.round(130*scl())&&!towers[j].bossHit&&getTotalCost(towers[j].lvl)>mc){mc=getTotalCost(towers[j].lvl);ex=towers[j];}}if(ex){ex.bossHit=true;ex.hp--;boom(ex.x,ex.y,'#ff4444',4);if(ex.hp<=0){destroyTower(ex);}e.destroyCooldown=180;}else e.destroyCooldown=180;}}
     // 🪑 자생단체: 민원증폭 - 주변 50px 내 몬스터 체력 30% 회복
     if(e.healer){
       e.destroyCooldown-=dt;
