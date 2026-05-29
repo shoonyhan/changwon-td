@@ -171,7 +171,7 @@ body{background:#1a2035;color:#e0e0e0;font-family:sans-serif;overflow:hidden;tou
       <div class="tr"><div class="n">1️⃣</div><div class="d"><strong>민원센터(💰50) 설치 후 클릭해서 진화!</strong><br>📋민원센터→🖥️동사무소(+100)→📢사업소(+500)→🏛️구청(+1000, 최대5개)<br>진화할수록 강력해지며 구청은 진상몬스터·시의원 카운터!</div></div>
       <div class="tr"><div class="n">✨</div><div class="d"><strong>타워 시너지!</strong> 인접(150px) 타워끼리 조합하면 버프 발동!<br>📢사업소+🏛️구청 → 구청 공격력 <strong>+50%</strong> | 🖥️동사무소+📢사업소 → 슬로우 <strong>+40%</strong> | 📋/🖥️+🏛️구청 → 구청 공격속도 <strong>+25%</strong><br>🗺️ 매 게임마다 맵이 랜덤으로 바뀌니 배치 전략을 다시 생각하세요!</div></div>
       <div class="tr"><div class="n">2️⃣</div><div class="d"><strong>웨이브 시작</strong> — 라운드마다 강해짐. 5배수 🗳️선거시즌. 라운드3~부터 랜덤이벤트!</div></div>
-      <div class="tr"><div class="n">⚠️</div><div class="d">😤<strong>반복민원충</strong> 물량형 | 😡<strong>고함민원인</strong> 타워감속 | 👿<strong>진상몬스터</strong> 타워철거(구청에 취약!) | 📄<strong>시민의소리</strong> 고속형 | 🎩<strong>시의원</strong> 최고가타워철거(구청에 취약!) | 🏛️<strong>구청은 철거 면역!</strong><br>📮<strong>국민신문고</strong>(6R~) 고체력·고속 | 🪑<strong>자생단체</strong>(8R~) 주변 몬스터 체력 30% 회복 | 🔴<strong>시의원</strong> 타워 10개 철거(구청포함) | 🔵<strong>시의원</strong> 타워 10개 마비+적버프 | 👑<strong>시의장</strong>(정기의회) 철거+마비 동시발동 | 🔍감사원감사/❄️예산동결 스킬봉쇄</div></div>
+      <div class="tr"><div class="n">⚠️</div><div class="d">😤<strong>반복민원충</strong> 물량형 | 😡<strong>고함민원인</strong> 타워감속 | 👿<strong>진상몬스터</strong> 타워철거(구청에 취약!) | 📄<strong>시민의소리</strong> 고속형 | 🎩<strong>시의원</strong> 최고가타워철거(구청에 취약!) | 🏛️<strong>구청은 철거 면역!</strong><br>📮<strong>국민신문고</strong>(6R~) 고체력·고속 | 🪑<strong>자생단체</strong>(8R~) 주변 몬스터 체력 30% 회복 | 🔴<strong>시의원</strong> 타워 10개 철거(구청포함) | 🔵<strong>시의원</strong> 타워 10개 마비+적버프 | 👑<strong>시의장</strong>(정기의회) 철거+마비 동시발동 | 🔍감사원감사 스킬봉쇄 | ❄️예산동결 타워건설봉쇄</div></div>
       <div class="tr"><div class="n">⭐</div><div class="d">⭐<strong>1000개</strong>→🏖️특별휴가(공속·탄속2배 2초) | ⭐<strong>2000개</strong>→💰추경편성(+5,000원, 라운드당 1회) | ⭐<strong>3000개</strong>→📣시장의 호통(공격력·공속·탄속3배+적감속)</div></div>
     </div>
     <div class="ttrow">
@@ -293,7 +293,7 @@ var money,hp,score,wave,waveActive,paused;
 var towers,enemies,projs,parts;
 var selTower,sellMode,selectedTower;
 var spawnQueue,spawnTimer;
-var hotongOn,hotongT,vacOn,vacT,evHpMul,evFestival,skillLocked,chueongUsed;
+var hotongOn,hotongT,vacOn,vacT,evHpMul,evFestival,skillLocked,chueongUsed,towerLocked;
 var gNames,gBuilt;
 var mouseX=-999,mouseY=-999;
 var statKills,statMaxCombo,statCurCombo,statVacCount,statHotongCount;
@@ -317,7 +317,7 @@ function initState(){
   towers=[];enemies=[];projs=[];parts=[];
   selTower=0;sellMode=false;selectedTower=null;
   spawnQueue=[];spawnTimer=0;
-  hotongOn=false;hotongT=0;vacOn=false;vacT=0;evHpMul=1;evFestival=false;skillLocked=false;chueongUsed=false;
+  hotongOn=false;hotongT=0;vacOn=false;vacT=0;evHpMul=1;evFestival=false;skillLocked=false;chueongUsed=false;towerLocked=false;
   statKills=0;statMaxCombo=0;statCurCombo=0;statVacCount=0;statHotongCount=0;
   situHintCooldown=0;
   shuffleG();PATH=buildPath();
@@ -347,7 +347,7 @@ function initStateFromWave(targetWave){
   waveActive=false;paused=false;
   selTower=0;sellMode=false;selectedTower=null;
   spawnQueue=[];spawnTimer=0;
-  hotongOn=false;hotongT=0;vacOn=false;vacT=0;evHpMul=1;evFestival=false;skillLocked=false;chueongUsed=false;
+  hotongOn=false;hotongT=0;vacOn=false;vacT=0;evHpMul=1;evFestival=false;skillLocked=false;chueongUsed=false;towerLocked=false;
   statKills=0;statMaxCombo=0;statCurCombo=0;statVacCount=0;statHotongCount=0;
   situHintCooldown=0;
   PATH=buildPath();
@@ -647,7 +647,7 @@ function useVacation(){
 }
 function useHotong(){
   if(score<3000||hotongOn)return;
-  if(skillLocked){hint('🚫 예산동결 중! 시장의 호통을 사용할 수 없습니다!');return;}
+  if(skillLocked){hint('🚫 감사원 감사 중! 시장의 호통을 사용할 수 없습니다!');return;}
   score-=1000;hotongOn=true;hotongT=180;statHotongCount++;
   for(var i=0;i<enemies.length;i++)enemies[i].spd*=0.5;
   upd();
@@ -658,7 +658,7 @@ function useHotong(){
 }
 function useChueong(){
   if(score<2000){hint('⭐2000개 필요! 추경편성 불가!');return;}
-  if(skillLocked){hint('🚫 예산동결 중! 추경편성을 사용할 수 없습니다!');return;}
+  if(skillLocked){hint('🚫 감사원 감사 중! 추경편성을 사용할 수 없습니다!');return;}
   if(chueongUsed){hint('⚠️ 이 라운드에 이미 추경편성을 사용했습니다!');return;}
   score-=2000;money+=5000;chueongUsed=true;upd();
   playSound('clear');
@@ -768,6 +768,7 @@ cv.addEventListener('click',function(e){
     return;
   }
   if(selTower!==0)return;
+  if(towerLocked){hint('❄️ 예산동결 중! 이 라운드에는 타워를 건설할 수 없습니다!');return;}
   if(nearPath(mx,my)){hint('경로 위에는 설치 불가!');return;}
   var ov=false;
   for(var i=0;i<towers.length;i++)if(Math.hypot(towers[i].x-mx,towers[i].y-my)<Math.round(40*scl())){ov=true;break;}
@@ -824,7 +825,7 @@ function startWave(){
   wave++;waveActive=true;PATH=buildPath();
   savedWave=wave;
   playSound('wave');
-  spawnQueue=[];spawnTimer=0;evHpMul=1;evFestival=false;skillLocked=false;chueongUsed=false;
+  spawnQueue=[];spawnTimer=0;evHpMul=1;evFestival=false;skillLocked=false;chueongUsed=false;towerLocked=false;
   var elec=(wave%5===0);
   var evIdx=-1;
   if(wave>=5){
@@ -839,7 +840,8 @@ function startWave(){
   if(elec)mMul*=2;
   if(ev==='고유가 피해지원금'||ev==='민생소비쿠폰'||ev==='재난지원금'){mMul*=2;evHpMul=2.0;}
   if(ev==='진해군항제 벚꽃축제'||ev==='마산국화축제'){mMul*=2;evFestival=true;}
-  if(ev==='감사원 감사'||ev==='예산동결'){skillLocked=true;}
+  if(ev==='감사원 감사'){skillLocked=true;}
+  if(ev==='예산동결'){towerLocked=true;}
   document.getElementById('swave').textContent='Round '+wave+(elec?' 🗳️선거시즌':'');
   document.getElementById('wave-btn').textContent='진행 중...';
   document.getElementById('pause-btn').disabled=false;
@@ -847,7 +849,7 @@ function startWave(){
   else if(ev==='진해군항제 벚꽃축제')showBanner('🌸 진해군항제!','#f9a8d4','몬스터 2배 · 타워 공격속도 -50%!');
   else if(ev==='마산국화축제')showBanner('🌼 마산국화축제!','#fde68a','몬스터 2배 · 타워 공격속도 -50%!');
   else if(ev==='감사원 감사')showBanner('🔍 감사원 감사!','#f87171','이 라운드 스킬 사용 불가!');
-  else if(ev==='예산동결')showBanner('❄️ 예산동결!','#93c5fd','이 라운드 스킬 사용 불가!');
+  else if(ev==='예산동결')showBanner('❄️ 예산동결!','#93c5fd','이 라운드 타워 건설 불가!');
   else showBanner('ROUND '+wave);
   // 라운드별 경고 및 클리어 팁
   if(wave===3)setTimeout(function(){hint('⚠️ 슬슬 어려워집니다! 타워를 경로에서 멀리 배치하세요!');},1200);
@@ -870,7 +872,7 @@ function startWave(){
   else if(ev==='진해군항제 벚꽃축제')ep.push('🌸 [진해군항제 벚꽃축제] — 몬스터 2배·타워 공격속도 -50%!');
   else if(ev==='마산국화축제')ep.push('🌼 [마산국화축제] — 몬스터 2배·타워 공격속도 -50%!');
   else if(ev==='감사원 감사')ep.push('🔍 [감사원 감사] — 스킬 사용 불가!');
-  else if(ev==='예산동결')ep.push('❄️ [예산동결] — 스킬 사용 불가!');
+  else if(ev==='예산동결')ep.push('❄️ [예산동결] — 타워 건설 불가!');
   else if(ev==='고유가 피해지원금'||ev==='민생소비쿠폰'||ev==='재난지원금')ep.push('📢 ['+ev+'] — 몬스터 체력 2배!');
   setEvBanner(ep.length?ep.join(' | '):null);
   // 타입: 0반복민원충 1고함민원인 2진상몬스터 3시민의소리 5국민신문고 6자생단체 7빨간의원 8파란의원 9시의장
