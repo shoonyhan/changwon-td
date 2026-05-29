@@ -827,7 +827,7 @@ function startWave(){
   spawnQueue=[];spawnTimer=0;evHpMul=1;evFestival=false;skillLocked=false;chueongUsed=false;
   var elec=(wave%5===0);
   var evIdx=-1;
-  if(wave>=3){
+  if(wave>=5){
     var roll=Math.random();
     if(roll<0.20&&wave>=7)evIdx=REVTS.indexOf('정기의회');
     else if(roll<0.40){var ne=['고유가 피해지원금','민생소비쿠폰','재난지원금'];evIdx=REVTS.indexOf(ne[Math.floor(Math.random()*ne.length)]);}
