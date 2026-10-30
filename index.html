@@ -109,6 +109,23 @@ body{background:#1a2035;color:#e0e0e0;font-family:sans-serif;overflow:hidden;tou
 .tt{background:#0d1e3a;border:1px solid #3a6abf;border-radius:8px;padding:4px 8px;text-align:center;min-width:80px;}
 .tt .ti{font-size:15px;}.tt .tn{font-size:9px;color:#90b8e0;font-weight:bold;}.tt .td{font-size:8px;color:#ffd700;margin-top:1px;}
 .start-btn{background:#3a80ff;border:none;border-radius:8px;padding:8px 28px;color:#fff;font-size:14px;font-weight:bold;cursor:pointer;width:100%;}
+#ach-toast{display:none;position:fixed;top:56px;right:10px;background:linear-gradient(135deg,#1a2a4a,#2a1a4a);border:2px solid #fde68a;border-radius:12px;padding:10px 16px;z-index:40;min-width:200px;box-shadow:0 0 24px rgba(253,230,138,0.5);}
+@keyframes achIn{from{transform:translateX(120%);opacity:0}to{transform:translateX(0);opacity:1}}
+#stamp{display:none;position:fixed;top:45%;left:50%;transform:translate(-50%,-50%) rotate(-12deg);border:6px double #ef4444;color:#ef4444;font-size:64px;font-weight:900;padding:8px 28px;border-radius:14px;z-index:19;pointer-events:none;letter-spacing:8px;font-family:serif;opacity:0.9;mix-blend-mode:screen;}
+@keyframes stampIn{0%{transform:translate(-50%,-50%) rotate(-12deg) scale(3);opacity:0}60%{transform:translate(-50%,-50%) rotate(-12deg) scale(0.9);opacity:1}100%{transform:translate(-50%,-50%) rotate(-12deg) scale(1);opacity:0.9}}
+#bossfx{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:radial-gradient(ellipse at center,rgba(239,68,68,0) 40%,rgba(239,68,68,0.55) 100%);z-index:14;pointer-events:none;animation:bossPulse 0.6s ease-out;}
+@keyframes bossPulse{0%{opacity:1}100%{opacity:0}}
+@media(max-width:600px){#stamp{font-size:36px;letter-spacing:4px;padding:4px 14px;}#ach-toast{right:6px;left:6px;min-width:0;}}
+#decree{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(5,12,30,0.88);z-index:28;flex-direction:column;align-items:center;justify-content:center;padding:12px;}
+.dc-title{font-size:26px;font-weight:900;color:#fde68a;text-shadow:0 0 16px #fbbf24;}
+.dc-sub{font-size:12px;color:#90b8e0;margin:4px 0 14px;}
+.dc-cards{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;max-width:760px;}
+.dc-card{background:linear-gradient(160deg,#1e2d50,#0d1e3a);border:2px solid #3a6abf;border-radius:14px;padding:16px 14px;width:210px;cursor:pointer;text-align:center;transition:transform .15s,border-color .15s;-webkit-tap-highlight-color:transparent;}
+.dc-card:hover,.dc-card:active{transform:translateY(-6px) scale(1.04);border-color:#fde68a;box-shadow:0 0 22px rgba(253,230,138,0.45);}
+.dc-ico{font-size:40px;}.dc-t{font-size:16px;font-weight:bold;color:#fff;margin:6px 0 4px;}
+.dc-d{font-size:12px;color:#86efac;line-height:1.4;}.dc-bad{font-size:11px;color:#f87171;margin-top:6px;}
+.dc-skip{margin-top:14px;font-size:12px;color:#7aa8d0;cursor:pointer;text-decoration:underline;}
+@media(max-width:600px){.dc-title{font-size:20px;}.dc-cards{gap:8px;}.dc-card{width:30%;min-width:100px;padding:10px 6px;}.dc-ico{font-size:28px;}.dc-t{font-size:12px;}.dc-d{font-size:10px;}.dc-bad{font-size:9px;}}
 </style>
 </head>
 <body>
@@ -148,7 +165,7 @@ body{background:#1a2035;color:#e0e0e0;font-family:sans-serif;overflow:hidden;tou
 </div>
 <div id="hfx"></div><div id="vfx"></div>
 <div id="evbanner"></div><div id="preview"></div>
-<div id="madeby">made by HKS / v4.2</div>
+<div id="madeby">made by HKS / v5.5</div>
 <div id="hint">민원센터를 설치한 뒤 클릭해서 진화시키세요!</div>
 <div id="rbanner"></div>
 <div id="pause-overlay" onclick="togglePause()">⏸ 일시정지<br><span style="font-size:14px;color:#7aa8d0">클릭하면 계속</span></div>
@@ -169,7 +186,7 @@ body{background:#1a2035;color:#e0e0e0;font-family:sans-serif;overflow:hidden;tou
     <div class="sub">밀려오는 민원 몬스터들로부터 창원시청을 지켜내세요!</div>
     <div class="ts">
       <div class="tr"><div class="n">1️⃣</div><div class="d"><strong>민원센터(💰50) 설치 후 클릭해서 진화!</strong><br>📋민원센터→🖥️동사무소(+100)→📢사업소(+500)→🏛️구청(+1000, 최대5개)<br>진화할수록 강력해지며 구청은 진상몬스터·시의원 카운터!</div></div>
-      <div class="tr"><div class="n">✨</div><div class="d"><strong>타워 시너지!</strong> 인접(150px) 타워끼리 조합하면 버프 발동!<br>📢사업소+🏛️구청 → 구청 공격력 <strong>+50%</strong> | 🖥️동사무소+📢사업소 → 슬로우 <strong>+40%</strong> | 📋/🖥️+🏛️구청 → 구청 공격속도 <strong>+25%</strong><br>🗺️ 매 게임마다 맵이 랜덤으로 바뀌니 배치 전략을 다시 생각하세요!</div></div>
+      <div class="tr"><div class="n">✨</div><div class="d"><strong>타워 시너지!</strong> 인접(150px) 타워끼리 조합하면 버프 발동!<br>📢사업소+🏛️구청 → 구청 공격력 <strong>+50%</strong> | 🖥️동사무소+📢사업소 → 슬로우 <strong>+40%</strong> | 📋/🖥️+🏛️구청 → 구청 공격속도 <strong>+25%</strong><br>🗺️ 매 게임마다 맵이 랜덤으로 바뀌니 배치 전략을 다시 생각하세요!<br>🔥<strong>콤보</strong>: 3초 안에 연속 처치! 5·10·20·30·50콤보마다 보너스 💰 | 💥<strong>크리티컬</strong> 12% 확률 2배 | 🤑<strong>황금민원인</strong> 처치 시 +250💰 | 🏆<strong>업적</strong> 달성 시 보상!<br>🖊️<strong>결재 선택</strong>: 라운드마다 3장 중 1장 결재 → 영구 강화 | 📢<strong>시민 만족도</strong> 100% → 무료 타워 | 👔<strong>VIP 민원</strong> 20초 내 처리 시 💰1000 | 👑<strong>10·20·30R 보스전</strong> 시의장 3단계 패턴</div></div>
       <div class="tr"><div class="n">2️⃣</div><div class="d"><strong>웨이브 시작</strong> — 라운드마다 강해짐. 5배수 🗳️선거시즌. 라운드3~부터 랜덤이벤트!</div></div>
       <div class="tr"><div class="n">⚠️</div><div class="d">😤<strong>반복민원충</strong> 물량형 | 😡<strong>고함민원인</strong> 타워감속 | 👿<strong>진상몬스터</strong> 타워철거(구청에 취약!) | 📄<strong>시민의소리</strong> 고속형 | 🎩<strong>시의원</strong> 최고가타워철거(구청에 취약!) | 🏛️<strong>구청은 철거 면역!</strong><br>📮<strong>국민신문고</strong>(6R~) 고체력·고속 | 🪑<strong>자생단체</strong>(8R~) 주변 몬스터 체력 30% 회복 | 🔴<strong>시의원</strong> 타워 10개 철거(구청포함) | 🔵<strong>시의원</strong> 타워 10개 마비+적버프 | 👑<strong>시의장</strong>(정기의회) 철거+마비 동시발동 | 🔍감사원감사 스킬봉쇄 | ❄️예산동결 타워건설봉쇄</div></div>
       <div class="tr"><div class="n">⭐</div><div class="d">⭐<strong>1000개</strong>→🏖️특별휴가(공속·탄속2배 2초) | ⭐<strong>2000개</strong>→💰추경편성(+5,000원, 라운드당 1회) | ⭐<strong>3000개</strong>→📣시장의 호통(공격력·공속·탄속3배+적감속)</div></div>
@@ -180,7 +197,7 @@ body{background:#1a2035;color:#e0e0e0;font-family:sans-serif;overflow:hidden;tou
       <div class="tt" style="border-color:#c084fc44;"><div class="ti">📢</div><div class="tn">사업소</div><div class="td">+💰500 광역슬로우</div></div>
       <div class="tt" style="border-color:#f8717144;"><div class="ti">🏛️</div><div class="tn">구청(최대5)</div><div class="td">+💰1000 최종병기</div></div>
     </div>
-    <div style="font-size:10px;color:#aaa;margin-bottom:6px;">made by HKS / v4.2</div>
+    <div style="font-size:10px;color:#aaa;margin-bottom:6px;">made by HKS / v5.5</div>
     <div style="margin-bottom:8px;">
       <div style="font-size:11px;color:#90b8e0;margin-bottom:5px;">⚙️ 난이도 선택</div>
       <div style="display:flex;gap:6px;justify-content:center;">
@@ -190,8 +207,14 @@ body{background:#1a2035;color:#e0e0e0;font-family:sans-serif;overflow:hidden;tou
       </div>
     </div>
     <button class="start-btn" onclick="startGame()">🎮 게임 시작!</button>
+    <button class="start-btn" onclick="startDaily()" style="margin-top:6px;background:linear-gradient(90deg,#b45309,#d97706);">📅 오늘의 도전 (데일리 챌린지)</button>
+    <div id="daily-best" style="font-size:10px;color:#fde68a;margin-top:4px;"></div>
   </div>
 </div>
+<div id="decree"></div>
+<div id="ach-toast"></div>
+<div id="stamp">처리완료</div>
+<div id="bossfx"></div>
 <div id="overlay">
   <h2 id="ov-title"></h2><p id="ov-body"></p>
   <div class="stats-grid" id="stats-grid"></div>
@@ -275,8 +298,13 @@ var MAP_PATTERNS=[
 function buildPath(){
   return MAP_PATTERNS[currentMapIdx]();
 }
+// ── 시드 랜덤 (데일리 챌린지용) ──
+var seedRng=null,dailyMode=false,dailyKey='';
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;var t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function rnd(){return seedRng?seedRng():Math.random();}
+function todayKey(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 function pickRandomMap(){
-  currentMapIdx=Math.floor(Math.random()*MAP_PATTERNS.length);
+  currentMapIdx=Math.floor(rnd()*MAP_PATTERNS.length);
 }
 function rebuildCanvas(){
   var oldW=W,oldH=H;
@@ -319,6 +347,9 @@ function initState(){
   spawnQueue=[];spawnTimer=0;
   hotongOn=false;hotongT=0;vacOn=false;vacT=0;evHpMul=1;evFestival=false;skillLocked=false;chueongUsed=false;towerLocked=false;
   statKills=0;statMaxCombo=0;statCurCombo=0;statVacCount=0;statHotongCount=0;
+  floats=[];comboTimer=0;shakeT=0;shakePow=0;cv.style.transform='';
+  satisfaction=0;vipTimer=0;vipEnemy=null;decreeOpen=false;document.getElementById('decree').style.display='none';
+  perks={rate:1,dmg:1,range:1,reward:1,hpBonus:0,enemyHp:1,nextMul:1,crit:0.12,interest:0};MAX_HP=30;
   situHintCooldown=0;
   shuffleG();PATH=buildPath();
 }
@@ -349,6 +380,9 @@ function initStateFromWave(targetWave){
   spawnQueue=[];spawnTimer=0;
   hotongOn=false;hotongT=0;vacOn=false;vacT=0;evHpMul=1;evFestival=false;skillLocked=false;chueongUsed=false;towerLocked=false;
   statKills=0;statMaxCombo=0;statCurCombo=0;statVacCount=0;statHotongCount=0;
+  floats=[];comboTimer=0;shakeT=0;shakePow=0;cv.style.transform='';
+  satisfaction=0;vipTimer=0;vipEnemy=null;decreeOpen=false;document.getElementById('decree').style.display='none';
+  perks={rate:1,dmg:1,range:1,reward:1,hpBonus:0,enemyHp:1,nextMul:1,crit:0.12,interest:0};MAX_HP=30;
   situHintCooldown=0;
   PATH=buildPath();
 }
@@ -369,8 +403,16 @@ function initDOM(){
   document.getElementById('b0').classList.add('sel');
   upd();
 }
+function startDaily(){
+  dailyMode=true;dailyKey=todayKey();
+  var seed=0;for(var i=0;i<dailyKey.length;i++)seed=(seed*31+dailyKey.charCodeAt(i))|0;
+  seedRng=mulberry32(seed);difficulty='normal';
+  startGame();
+  setTimeout(function(){hint('📅 오늘의 도전 ('+dailyKey+') — 모두 같은 맵·같은 이벤트! 몇 라운드까지 갈까?');},600);
+}
 function startGame(){
   stopLoop();
+  if(!dailyMode){seedRng=null;}
   pickRandomMap();
   initState();rebuildCanvas();
   document.getElementById('tut').style.display='none';
@@ -379,6 +421,7 @@ function startGame(){
 }
 function restartGame(){
   stopLoop();
+  if(dailyMode){var seed=0;for(var i=0;i<dailyKey.length;i++)seed=(seed*31+dailyKey.charCodeAt(i))|0;seedRng=mulberry32(seed);}
   pickRandomMap();
   initState();
   rebuildCanvas();
@@ -401,7 +444,7 @@ function restartGame(){
   startLoop();
 }
 function goHome(){
-  stopLoop();
+  stopLoop();dailyMode=false;seedRng=null;
   initState();rebuildCanvas();
   document.getElementById('overlay').style.display='none';
   document.getElementById('tut').style.display='flex';
@@ -556,6 +599,8 @@ function doEvolveType(type){
   if(!gNames||gBuilt>=gNames.length)shuffleG();
   selectedTower.label=(type==='atk'?'⚔️':'🛡️')+gNames[gBuilt];
   gBuilt++;
+  unlockAch('first_gu');if(gBuilt>=5)unlockAch('five_gu');
+  floatText(selectedTower.x,selectedTower.y-40,'🏛️ 구청 승격!','#fbbf24',16,{life:70,vy:-0.8,bold:true});shake(5,10);
   selectedTower.bossHit=false;
   boom(selectedTower.x,selectedTower.y,'#4ade80',12);
   boom(selectedTower.x,selectedTower.y,'#ffd700',8);
@@ -588,6 +633,7 @@ function doEvolve(){
   money-=cost;
   selectedTower.lvl++;
   var newTl=TLEVELS[selectedTower.lvl];
+  floatText(selectedTower.x,selectedTower.y-36,'⬆️ '+newTl.name+' 승격!','#4ade80',13,{life:55,vy:-0.8,bold:true});
   selectedTower.hp=newTl.maxHp;
   selectedTower.maxHp=newTl.maxHp;
   if(selectedTower.lvl===3){
@@ -595,6 +641,8 @@ function doEvolve(){
     if(!gNames||gBuilt>=gNames.length){shuffleG();}
     selectedTower.label=gNames[gBuilt];
     gBuilt++;
+    unlockAch('first_gu');if(gBuilt>=5)unlockAch('five_gu');
+    floatText(selectedTower.x,selectedTower.y-40,'🏛️ 구청 승격!','#fbbf24',16,{life:70,vy:-0.8,bold:true});shake(5,10);
   }
   selectedTower.bossHit=false;
   boom(selectedTower.x,selectedTower.y,'#4ade80',12);
@@ -607,7 +655,7 @@ function doEvolve(){
 function doSell(){
   if(!selectedTower)return;
   var tot=getTotalCost(selectedTower.lvl);
-  money+=Math.floor(tot*0.6);
+  money+=Math.floor(tot*(perks.refund||0.6));
   if(selectedTower.lvl===3)gBuilt--;
   towers.splice(towers.indexOf(selectedTower),1);
   closeEvoPopup();upd();
@@ -747,7 +795,7 @@ cv.addEventListener('touchend',function(e){
   }));
 },{passive:false});
 cv.addEventListener('click',function(e){
-  if(document.getElementById('tut').style.display==='flex')return;
+  if(document.getElementById('tut').style.display==='flex'||decreeOpen)return;
   var pop=document.getElementById('evo-popup');
   if(pop.style.display==='block'){
     var r2=pop.getBoundingClientRect();
@@ -777,6 +825,8 @@ cv.addEventListener('click',function(e){
   money-=50;
   towers.push({x:mx,y:my,lvl:0,cd:0,label:null,debuffed:false,bossHit:false,destroyCooldown:0,hp:1,maxHp:1,paralyzed:0});
   playSound('place');
+  floatText(mx,my-30,PLACE_QUOTES[Math.floor(Math.random()*PLACE_QUOTES.length)],'#222',10,{life:45,vy:-0.6,bubble:true});
+  unlockAch('first_tower');
   upd();
 });
 
@@ -829,14 +879,16 @@ function startWave(){
   var elec=(wave%5===0);
   var evIdx=-1;
   if(wave>=5){
-    var roll=Math.random();
+    var roll=rnd();
     if(roll<0.20&&wave>=7)evIdx=REVTS.indexOf('정기의회');
-    else if(roll<0.40){var ne=['고유가 피해지원금','민생소비쿠폰','재난지원금'];evIdx=REVTS.indexOf(ne[Math.floor(Math.random()*ne.length)]);}
-    else if(roll<0.55){var fe=['진해군항제 벚꽃축제','마산국화축제'];evIdx=REVTS.indexOf(fe[Math.floor(Math.random()*fe.length)]);}
-    else if(roll<0.70&&wave>=5){var se=['감사원 감사','예산동결'];evIdx=REVTS.indexOf(se[Math.floor(Math.random()*se.length)]);}
+    else if(roll<0.40){var ne=['고유가 피해지원금','민생소비쿠폰','재난지원금'];evIdx=REVTS.indexOf(ne[Math.floor(rnd()*ne.length)]);}
+    else if(roll<0.55){var fe=['진해군항제 벚꽃축제','마산국화축제'];evIdx=REVTS.indexOf(fe[Math.floor(rnd()*fe.length)]);}
+    else if(roll<0.70&&wave>=5){var se=['감사원 감사','예산동결'];evIdx=REVTS.indexOf(se[Math.floor(rnd()*se.length)]);}
   }
   var ev=evIdx>=0?REVTS[evIdx]:null;
-  var mMul=1;
+  var mMul=perks.nextMul||1;perks.nextMul=1;
+  perks.curReward=perks.nextReward||1;perks.nextReward=1;perks.curSpd=perks.nextSpd||1;perks.nextSpd=1;
+  if(perks.interest>0){var it=Math.floor(money*perks.interest);if(it>0){money+=it;floatText(W/2,H*0.25,'🏦 이자 +💰'+it,'#86efac',16,{life:70,vy:-0.5,bold:true});}}
   if(elec)mMul*=2;
   if(ev==='고유가 피해지원금'||ev==='민생소비쿠폰'||ev==='재난지원금'){mMul*=2;evHpMul=2.0;}
   if(ev==='진해군항제 벚꽃축제'||ev==='마산국화축제'){mMul*=2;evFestival=true;}
@@ -880,7 +932,16 @@ function startWave(){
   var maxET=(wave>=8)?8:wave>=6?7:wave>=5?6:wave>=4?3:2;
   var cnt=Math.round((6+wave*4)*mMul);
   var itv=Math.max(22,75-wave*5);
-  if(ev==='정기의회'){
+  // 👔 VIP 민원: 라운드 3+ 에서 35% 확률, 중간쯤 등장
+  vipTimer=0;vipEnemy=null;
+  if(wave>=3&&wave%10!==0&&rnd()<0.35){spawnQueue.push({delay:Math.round(cnt*itv*0.4),type:1,vip:true});}
+  if(wave%10===0){
+    // 👑 보스전: 시의장 단독 등장, 체력 10배, 3단계 패턴
+    spawnQueue=[];
+    spawnQueue.push({delay:90,type:9,bossMode:true});
+    setEvBanner('👑 [보스전] 시의장 단독 출현! — 체력 70%·40%·10% 구간 패턴 주의!');
+    showBanner('👑 BOSS','#fbbf24','Round '+wave+' — 시의장과의 결전!');
+  } else if(ev==='정기의회'){
     var cc=Math.min(20,Math.max(3,Math.round(wave*1.5)));
     for(var i=0;i<cc;i++){
       spawnQueue.push({delay:i*150+Math.random()*20,type:Math.random()<0.5?7:8});
@@ -911,25 +972,236 @@ function previewNextWave(){
   showPreview('📋 Round '+nw+(elec?' 🗳️선거시즌':'')+' 예고: '+icons+rec);
   setTimeout(function(){showPreview(null);},3500);
 }
-function spawnOne(type){
+function spawnOne(type,bossMode,vip){
   if(type===undefined||type===null||type<0||type>=EDEFS.length||!EDEFS[type]){
     console.warn('Invalid spawn type:',type);return;
   }
-  var d=EDEFS[type],h=d.hp*(1+wave*0.30)*evHpMul*(diffMul[difficulty]||1.0);
-  var spd=d.spd*spdMul(wave);
-  enemies.push({
+  var d=EDEFS[type],h=d.hp*(1+wave*0.30)*evHpMul*(diffMul[difficulty]||1.0)*perks.enemyHp;
+  var spd=d.spd*spdMul(wave)*(perks.curSpd||1);
+  // 🤑 황금민원인: 일반 몬스터 6% 확률로 등장, 체력 2배·보상 대박
+  var golden=(type<=3&&Math.random()<0.06);
+  var en={
     t:0,x:PATH[0].x,y:PATH[0].y,hp:h,maxHp:h,
     spd:spd,baseSpd:spd,slow:0,rw:d.rw,dmg:d.dmg,
     col:d.col,sz:Math.round(d.sz*scl()),ico:d.ico,tag:d.tag,
     destroyCooldown:0,blueBuff:0,
-    healer:!!d.healer,red:!!d.red,blue:!!d.blue,gold:!!d.gold
+    healer:!!d.healer,red:!!d.red,blue:!!d.blue,gold:!!d.gold,golden:golden
+  };
+  if(golden){en.hp*=2;en.maxHp*=2;en.ico='🤑';en.tag='💰 황금민원인';en.col='#ffd700';en.sz=Math.round(18*scl());}
+  if(bossMode){en.hp*=10;en.maxHp*=10;en.bossMode=true;en.phase=0;en.rw*=5;en.spd*=0.7;en.baseSpd=en.spd;en.sz=Math.round(38*scl());en.tag='👑 시의장 (BOSS)';}
+  enemies.push(en);
+  if(bossMode){bossEntrance('👑 시의장 BOSS');return;}
+  if(vip){en.vip=true;en.ico='👔';en.tag='👔 VIP 민원';en.col='#ffd700';en.hp*=1.5;en.maxHp*=1.5;en.sz=Math.round(20*scl());vipEnemy=en;vipTimer=20*60;playSound('wave');floatText(W/2,H*0.2,'👔 VIP 민원 접수! 20초 안에 처리!','#ffd700',14,{life:90,vy:-0.4,bold:true});}
+  if(d.gold)bossEntrance('👑 시의장');
+  else if(d.red&&wave<=8)floatText(W/2,H*0.2,'🔴 시의원 등장!','#f87171',13,{life:60,vy:-0.5,bold:true});
+  else if(d.blue&&wave<=8)floatText(W/2,H*0.2,'🔵 시의원 등장!','#60a5fa',13,{life:60,vy:-0.5,bold:true});
+}
+// ══════════ 재미 팩 v5.5 ══════════
+// ── 떠오르는 텍스트 (데미지/돈/대사/콤보) ──
+var floats=[];
+function floatText(x,y,txt,col,size,opt){
+  opt=opt||{};
+  floats.push({x:x,y:y,txt:txt,col:col||'#fff',size:size||12,life:opt.life||45,max:opt.life||45,vy:opt.vy!==undefined?opt.vy:-1.2,vx:opt.vx||0,bubble:!!opt.bubble,bold:!!opt.bold});
+}
+function drawFloats(dt){
+  for(var i=floats.length-1;i>=0;i--){
+    var f=floats[i];f.x+=f.vx*dt;f.y+=f.vy*dt;f.life-=dt;
+    if(f.life<=0){floats.splice(i,1);continue;}
+    var a=Math.min(1,f.life/12);
+    cx.save();cx.globalAlpha=a;cx.textAlign='center';cx.textBaseline='middle';
+    cx.font=(f.bold?'bold ':'')+Math.round(f.size*scl()+(f.size>16?0:4))+'px sans-serif';
+    if(f.bubble){
+      var w=cx.measureText(f.txt).width+16,h=f.size*scl()+14;
+      cx.fillStyle='rgba(255,255,255,0.95)';cx.beginPath();cx.roundRect(f.x-w/2,f.y-h/2,w,h,8);cx.fill();
+      cx.strokeStyle='#333';cx.lineWidth=1.5;cx.stroke();
+      cx.fillStyle='#222';cx.fillText(f.txt,f.x,f.y);
+    } else {
+      cx.lineWidth=3;cx.strokeStyle='rgba(0,0,0,0.7)';cx.strokeText(f.txt,f.x,f.y);
+      cx.fillStyle=f.col;cx.fillText(f.txt,f.x,f.y);
+    }
+    cx.restore();
+  }
+}
+// ── 화면 흔들림 ──
+var shakeT=0,shakePow=0;
+function shake(pow,dur){shakePow=Math.max(shakePow,pow);shakeT=Math.max(shakeT,dur);}
+function applyShake(dt){
+  if(shakeT>0){shakeT-=dt;var p=shakePow*(shakeT/10);cv.style.transform='translate('+((Math.random()-0.5)*p)+'px,'+((Math.random()-0.5)*p)+'px)';}
+  else if(shakePow>0){shakePow=0;cv.style.transform='';}
+}
+// ── 민원인 단말마 대사 ──
+var DEATH_QUOTES=['담당자 바꿔!','시장 나오라 해!','내가 누군지 알아?','국민신문고 올릴 거야','세금 내는데 이게 뭐야','아 진짜 짜증나!','이거 녹음하고 있어요','언론에 제보할 거야','다시 올게요…','처리 완료? 알겠어요','민원 취하할게요','어… 죄송합니다','이번엔 봐줄게','감사합니다 공무원님','졌다…','다음 주에 또 올게','상급기관에 말할 거야','왜 나한테만 이래!'];
+var BOSS_QUOTES={red:'예산 삭감이다!!',blue:'다음 회기에 보자!',gold:'본 의장은… 사퇴한다…'};
+var PLACE_QUOTES=['접수했습니다~','민원 처리 중입니다','담당자 배정 완료','잠시만 기다려 주세요','순서대로 처리됩니다'];
+// ── 콤보 시스템 ──
+var comboTimer=0,comboFlash=0;
+var COMBO_MILESTONES={5:50,10:150,20:400,30:1000,50:3000};
+function addCombo(x,y){
+  statCurCombo++;comboTimer=180;comboFlash=20;
+  if(statCurCombo>statMaxCombo)statMaxCombo=statCurCombo;
+  var bonus=COMBO_MILESTONES[statCurCombo];
+  if(bonus){
+    money+=bonus;score+=Math.floor(bonus/2);
+    floatText(W/2,H*0.3,'🔥 '+statCurCombo+' COMBO! +💰'+bonus,'#fbbf24',26,{life:80,vy:-0.6,bold:true});
+    playSound('clear');shake(6,12);addSat(8);
+    if(statCurCombo===10)unlockAch('combo10');
+    if(statCurCombo===30)unlockAch('combo30');
+  } else if(statCurCombo>=3){
+    floatText(x,y-30,statCurCombo+' 연속!','#fde68a',11,{life:30,vy:-1.5,bold:true});
+  }
+}
+// ── 📢 시민 만족도 ──
+var satisfaction=0;
+function addSat(n){satisfaction=Math.min(100,satisfaction+n);if(satisfaction>=100)triggerSatReward();}
+function triggerSatReward(){
+  satisfaction=0;playSound('clear');shake(6,12);showStamp('시민감사');
+  // 보상: 가장 경로에 가까운 자리에 동사무소 1개 무료 or 타워 전체 3초 무적+공속2배
+  var placed=false;
+  for(var tries=0;tries<40&&!placed;tries++){
+    var pt=ptAt(0.2+rnd()*0.6),ang=rnd()*Math.PI*2,r=Math.round((70+rnd()*30)*scl());
+    var x=pt.x+Math.cos(ang)*r,y=pt.y+Math.sin(ang)*r;
+    if(x<20||x>W-20||y<20||y>H-20||nearPath(x,y))continue;
+    var ov=false;for(var i=0;i<towers.length;i++)if(Math.hypot(towers[i].x-x,towers[i].y-y)<Math.round(40*scl())){ov=true;break;}
+    if(ov)continue;
+    towers.push({x:x,y:y,lvl:1,cd:0,label:null,debuffed:false,bossHit:false,destroyCooldown:0,hp:2,maxHp:2,paralyzed:0});
+    boom(x,y,'#4ade80',16);floatText(x,y-40,'📢 시민이 동사무소를 지어줬어요!','#4ade80',14,{life:90,vy:-0.5,bold:true});placed=true;
+  }
+  if(!placed){vacOn=true;vacT=180;document.getElementById('vfx').style.display='block';setTimeout(function(){document.getElementById('vfx').style.display='none';},500);floatText(W/2,H*0.35,'📢 시민 응원! 전 타워 공속 2배 3초!','#4ade80',20,{life:90,vy:-0.4,bold:true});}
+  unlockAch('sat100');
+}
+function drawSatisfaction(){
+  var bw=Math.min(W*0.22,160)*scl()+40,bh=8,bx=8,by=(isMobile()?44:40);
+  cx.save();cx.fillStyle='rgba(0,0,0,0.55)';cx.beginPath();cx.roundRect(bx-4,by-18,bw+8,bh+24,6);cx.fill();
+  cx.font='bold 10px sans-serif';cx.fillStyle='#86efac';cx.textAlign='left';cx.textBaseline='bottom';cx.fillText('📢 시민 만족도 '+Math.floor(satisfaction)+'%',bx,by-3);
+  cx.fillStyle='#1a2a1a';cx.fillRect(bx,by,bw,bh);
+  var g=cx.createLinearGradient(bx,0,bx+bw,0);g.addColorStop(0,'#4ade80');g.addColorStop(1,'#fde68a');
+  cx.fillStyle=g;cx.fillRect(bx,by,bw*satisfaction/100,bh);
+  if(satisfaction>=80){cx.strokeStyle='rgba(253,230,138,'+(0.5+0.5*Math.abs(Math.sin(Date.now()/200)))+')';cx.lineWidth=2;cx.strokeRect(bx-1,by-1,bw+2,bh+2);}
+  cx.restore();
+}
+var vipTimer=0,vipEnemy=null;
+function drawVipHUD(dt){
+  if(!vipEnemy||vipEnemy.hp<=0||enemies.indexOf(vipEnemy)<0){vipEnemy=null;return;}
+  vipTimer-=dt;
+  if(vipTimer<=0){var e=vipEnemy;vipEnemy=null;hp-=5;floatText(e.x,e.y-40,'⏰ 시간초과! 시청 -5','#f87171',16,{life:70,vy:-0.5,bold:true});shake(8,15);playSound('hp');var i=enemies.indexOf(e);if(i>=0)enemies.splice(i,1);upd();if(hp<=0)showGameOver();return;}
+  var sec=Math.ceil(vipTimer/60);
+  cx.save();cx.shadowColor='#ffd700';cx.shadowBlur=18;cx.strokeStyle='#ffd700';cx.lineWidth=3;cx.beginPath();cx.arc(vipEnemy.x,vipEnemy.y,vipEnemy.sz+8,0,Math.PI*2);cx.stroke();cx.restore();
+  cx.save();cx.textAlign='center';cx.textBaseline='middle';cx.font='bold '+Math.round(14*scl()+4)+'px sans-serif';
+  cx.lineWidth=3;cx.strokeStyle='#000';cx.strokeText('⏰ '+sec,vipEnemy.x,vipEnemy.y-vipEnemy.sz-40);
+  cx.fillStyle=sec<=5?'#f87171':'#ffd700';cx.fillText('⏰ '+sec,vipEnemy.x,vipEnemy.y-vipEnemy.sz-40);cx.restore();
+}
+// ── 🖊️ 결재 선택 (라운드 사이 로그라이크 카드) ──
+var perks={rate:1,dmg:1,range:1,reward:1,hpBonus:0,enemyHp:1,nextMul:1,crit:0.12,interest:0};
+var DECREES=[
+  {id:'budget',ico:'📈',t:'예산 증액',d:'처치 보상 +50% (영구)',bad:'적 체력 +20%',f:function(){perks.reward*=1.5;perks.enemyHp*=1.2;}},
+  {id:'safety',ico:'🛡️',t:'안전진단',d:'모든 타워 HP +1 (구청 제외)',bad:null,f:function(){for(var i=0;i<towers.length;i++)if(towers[i].lvl<3){towers[i].maxHp++;towers[i].hp++;}perks.hpBonus++;}},
+  {id:'overtime',ico:'⚡',t:'야근 수당',d:'전 타워 공격속도 +15% (영구)',bad:null,f:function(){perks.rate*=0.85;}},
+  {id:'bounty',ico:'💸',t:'민원 포상금',d:'즉시 💰800',bad:'다음 라운드 몬스터 +50%',f:function(){money+=800;perks.nextMul=1.5;}},
+  {id:'training',ico:'📚',t:'직무 교육',d:'전 타워 공격력 +12% (영구)',bad:null,f:function(){perks.dmg*=1.12;}},
+  {id:'cctv',ico:'📡',t:'CCTV 증설',d:'전 타워 사거리 +10% (영구)',bad:null,f:function(){perks.range*=1.1;}},
+  {id:'lucky',ico:'🍀',t:'운수 좋은 날',d:'크리티컬 확률 +6% (영구)',bad:null,f:function(){perks.crit+=0.06;}},
+  {id:'heal',ico:'❤️',t:'청사 보수',d:'시청 최대체력 +10 & 풀회복',bad:null,f:function(){MAX_HP+=10;hp=MAX_HP;}},
+  {id:'interest',ico:'🏦',t:'기금 운용',d:'매 라운드 보유금의 5% 이자',bad:null,f:function(){perks.interest+=0.05;}},
+  {id:'refund',ico:'🔄',t:'예산 재배정',d:'타워 판매 환급 100%',bad:null,f:function(){perks.refund=1;}},
+  {id:'gamble',ico:'🎲',t:'복권 당첨',d:'즉시 💰0~2500 랜덤',bad:null,f:function(){var g=Math.floor(rnd()*2501);money+=g;floatText(W/2,H*0.4,'🎲 당첨금 💰'+g+'!',g>1500?'#ffd700':'#fff',22,{life:90,vy:-0.4,bold:true});}},
+  {id:'rush',ico:'⏩',t:'신속 처리',d:'다음 라운드 보상 2배',bad:'다음 라운드 적 속도 +30%',f:function(){perks.nextReward=2;perks.nextSpd=1.3;}},
+];
+var decreeOpen=false;
+function showDecree(){
+  if(waveActive||wave>=30)return;
+  var pool=DECREES.slice(),cards=[];
+  while(cards.length<3&&pool.length){cards.push(pool.splice(Math.floor(rnd()*pool.length),1)[0]);}
+  var el=document.getElementById('decree');
+  var html='<div class="dc-title">🖊️ 결재 선택</div><div class="dc-sub">Round '+(wave+1)+' 시작 전 — 하나를 결재하세요</div><div class="dc-cards">';
+  cards.forEach(function(c,i){
+    html+='<div class="dc-card" onclick="pickDecree('+i+')"><div class="dc-ico">'+c.ico+'</div><div class="dc-t">'+c.t+'</div><div class="dc-d">'+c.d+'</div>'+(c.bad?'<div class="dc-bad">⚠️ '+c.bad+'</div>':'')+'</div>';
   });
+  html+='</div><div class="dc-skip" onclick="pickDecree(-1)">결재 보류 (건너뛰기) →</div>';
+  el.innerHTML=html;el.style.display='flex';decreeOpen=true;decreeCards=cards;
+}
+var decreeCards=[];
+function pickDecree(i){
+  var el=document.getElementById('decree');el.style.display='none';decreeOpen=false;
+  if(i>=0&&decreeCards[i]){decreeCards[i].f();playSound('evolve');showStamp('결재');floatText(W/2,H*0.3,decreeCards[i].ico+' '+decreeCards[i].t+' 결재 완료!','#fde68a',18,{life:80,vy:-0.5,bold:true});upd();}
+  setTimeout(function(){if(!waveActive)startWave();},i>=0?900:200);
+}
+function drawComboHUD(dt){
+  if(comboTimer>0){comboTimer-=dt;if(comboTimer<=0){statCurCombo=0;}}
+  if(comboFlash>0)comboFlash-=dt;
+  if(statCurCombo<3)return;
+  var sc=1+(comboFlash>0?comboFlash/40:0);
+  var col=statCurCombo>=30?'#f87171':statCurCombo>=20?'#fb923c':statCurCombo>=10?'#fbbf24':'#fde68a';
+  cx.save();cx.textAlign='center';cx.textBaseline='top';
+  cx.font='900 '+Math.round(28*scl()*sc)+'px sans-serif';
+  cx.lineWidth=4;cx.strokeStyle='rgba(0,0,0,0.8)';
+  var txt=statCurCombo+' COMBO';
+  var cy=isMobile()?36:48;cx.strokeText(txt,W/2,cy);cx.fillStyle=col;cx.fillText(txt,W/2,cy);
+  // 콤보 타이머 바
+  var bw=120*scl(),bx=W/2-bw/2,by=cy+32*scl()*sc;
+  cx.fillStyle='rgba(0,0,0,0.5)';cx.fillRect(bx,by,bw,4);
+  cx.fillStyle=col;cx.fillRect(bx,by,bw*(comboTimer/180),4);
+  cx.restore();
+}
+// ── 업적 시스템 ──
+var ACHS={
+  first_tower:{t:'🏗️ 첫 발령',d:'첫 민원센터 설치',r:100},
+  first_gu:{t:'🏛️ 승진!',d:'첫 구청 건설',r:300},
+  five_gu:{t:'🏙️ 창원시 완성',d:'구청 5개 모두 건설',r:1500},
+  combo10:{t:'🔥 일 잘하는 공무원',d:'10 콤보 달성',r:200},
+  combo30:{t:'⚡ 민원 처리의 신',d:'30 콤보 달성',r:1000},
+  kill_boss:{t:'👑 의장 탄핵',d:'시의장 처치',r:1500},
+  golden:{t:'🤑 보너스 민원',d:'황금민원인 처치',r:200},
+  r10:{t:'🎖️ 10라운드 돌파',d:'Round 10 도달',r:500},
+  r20:{t:'🏅 20라운드 돌파',d:'Round 20 도달',r:1500},
+  clear:{t:'🏆 창원의 수호자',d:'30라운드 클리어',r:0},
+  vip:{t:'👔 VIP 응대',d:'VIP 민원 제한시간 내 처리',r:300},
+  sat100:{t:'📢 시민의 영웅',d:'시민 만족도 100% 달성',r:500},
+  boss10:{t:'⚔️ 의회 격파',d:'보스전 시의장 처치',r:1000}
+};
+var achDone={};
+try{achDone=JSON.parse(localStorage.getItem('cwTD_ach')||'{}');}catch(e){achDone={};}
+var achQueue=[],achShowing=false;
+function unlockAch(key){
+  if(achDone[key]||!ACHS[key])return;
+  achDone[key]=true;
+  try{localStorage.setItem('cwTD_ach',JSON.stringify(achDone));}catch(e){}
+  achQueue.push(key);showNextAch();
+}
+function showNextAch(){
+  if(achShowing||!achQueue.length)return;
+  achShowing=true;var k=achQueue.shift(),a=ACHS[k];
+  if(a.r){money+=a.r;upd();}
+  var el=document.getElementById('ach-toast');
+  el.innerHTML='<div style="font-size:11px;color:#fde68a;">🏆 업적 달성!</div><div style="font-size:15px;font-weight:bold;color:#fff;margin:2px 0;">'+a.t+'</div><div style="font-size:11px;color:#c0e0ff;">'+a.d+(a.r?' · 보상 💰'+a.r:'')+'</div>';
+  el.style.display='block';el.style.animation='none';void el.offsetWidth;el.style.animation='achIn 0.4s ease-out';
+  playSound('evolve');
+  setTimeout(function(){el.style.display='none';achShowing=false;showNextAch();},3200);
+}
+// ── 처리완료 도장 ──
+function showStamp(txt){
+  var el=document.getElementById('stamp');el.textContent=txt||'처리완료';
+  el.style.display='block';el.style.animation='none';void el.offsetWidth;el.style.animation='stampIn 0.5s cubic-bezier(.2,2,.4,1)';
+  setTimeout(function(){el.style.display='none';},1800);
+}
+// ── 보스 등장 연출 ──
+function bossEntrance(name){
+  var f=document.getElementById('bossfx');f.style.display='block';
+  setTimeout(function(){f.style.display='none';},600);
+  shake(10,25);playSound('hotong');
+  showBanner('⚠️ '+name+' 등장!','#f87171','타워를 지켜라!!');
 }
 function killE(e){
-  score+=e.rw;money+=e.rw;statKills++;statCurCombo++;
-  if(statCurCombo>statMaxCombo)statMaxCombo=statCurCombo;
-  if(e.gold){playSound('killboss');}
-  else if(e.red||e.blue||e.ico==='👿'){playSound('kill');}
+  var rw=Math.round(e.rw*perks.reward*(perks.curReward||1));score+=rw;money+=rw;statKills++;
+  addCombo(e.x,e.y);addSat(e.vip?15:e.golden?5:e.gold?20:(e.red||e.blue)?6:1.2);
+  floatText(e.x+10,e.y-10,'+💰'+rw,'#fde68a',11,{life:40,vy:-1.4,vx:0.4});
+  var q=null;
+  if(e.gold)q=BOSS_QUOTES.gold;else if(e.red)q=BOSS_QUOTES.red;else if(e.blue)q=BOSS_QUOTES.blue;
+  else if(Math.random()<0.35)q=DEATH_QUOTES[Math.floor(Math.random()*DEATH_QUOTES.length)];
+  if(q)floatText(e.x,e.y-e.sz-36,q,'#222',11,{life:70,vy:-0.5,bubble:true});
+  if(e.vip){vipEnemy=null;money+=1000;score+=300;showStamp('VIP처리');floatText(e.x,e.y-60,'👔 VIP 처리! +💰1000','#ffd700',20,{life:90,vy:-0.6,bold:true});playSound('clear');shake(6,10);unlockAch('vip');}
+  if(e.golden){money+=250;floatText(e.x,e.y-50,'💰 황금민원! +250','#ffd700',16,{life:70,vy:-1,bold:true});unlockAch('golden');for(var g=0;g<14;g++)boom(e.x,e.y,'#ffd700',2);}
+  if(e.gold){playSound('killboss');shake(12,30);unlockAch('kill_boss');if(e.bossMode){unlockAch('boss10');showStamp('의회격파');}floatText(e.x,e.y-70,'👑 시의장 처치!!','#fbbf24',24,{life:90,vy:-0.4,bold:true});}
+  else if(e.red||e.blue||e.ico==='👿'){playSound('kill');shake(4,8);}
   else{playShoot();}
   if(e.ico==='👿'){
     for(var i=0;i<enemies.length;i++){
@@ -958,7 +1230,8 @@ function saveScore(isCleared){
   try{
     var records=JSON.parse(localStorage.getItem('cwTD_records')||'[]');
     var diffLabel={'easy':'쉬움','normal':'보통','hard':'어려움'}[difficulty]||'보통';
-    records.push({wave:wave,score:score,kills:statKills,diff:diffLabel,date:new Date().toLocaleDateString('ko-KR'),cleared:isCleared});
+    records.push({wave:wave,score:score,kills:statKills,diff:(dailyMode?'📅데일리 ':'')+diffLabel,date:new Date().toLocaleDateString('ko-KR'),cleared:isCleared});
+    if(dailyMode){try{var dk=JSON.parse(localStorage.getItem('cwTD_daily')||'{}');if(!dk[dailyKey]||dk[dailyKey].score<score)dk[dailyKey]={wave:wave,score:score};localStorage.setItem('cwTD_daily',JSON.stringify(dk));}catch(e){}}
     records.sort(function(a,b){return b.score-a.score;});
     records=records.slice(0,5);
     localStorage.setItem('cwTD_records',JSON.stringify(records));
@@ -977,6 +1250,8 @@ function renderLeaderboard(records){
         +' | ⭐'+r.score
         +' | <span style="color:#aaa">'+r.diff+' · '+r.date+'</span><br>';
     });
+    var n=Object.keys(achDone).length,tot=Object.keys(ACHS).length;
+    html+='<div style="margin-top:6px;color:#fde68a;">🏆 업적 '+n+'/'+tot+'</div>';
     el.innerHTML=html;
   }
 }
@@ -984,7 +1259,7 @@ function renderLeaderboard(records){
 // ── 카카오톡 공유 ──
 function shareKakao(){
   var isCleared=wave>=30;
-  var text='🏛️ 민원 몬스터 타워 디펜스\n'
+  var text='🏛️ 민원 몬스터 타워 디펜스'+(dailyMode?' 📅 '+dailyKey+' 오늘의 도전':'')+'\n'
     +(isCleared?'🎉 30라운드 완전 클리어!':'⚔️ Round '+wave+' 도달!')
     +'\n⭐점수: '+score+'점 | 💀처치: '+statKills+'마리'
     +'\n창원시청을 지켜라! 👉 https://shoonyhan.github.io/changwon-td';
@@ -1211,6 +1486,7 @@ function drawTower(t){
   }
 }
 function drawEnemy(e){
+  if(e.golden){cx.save();cx.shadowColor='#ffd700';cx.shadowBlur=20;cx.strokeStyle='#ffd700';cx.lineWidth=2.5;cx.beginPath();cx.arc(e.x,e.y,e.sz+6+Math.sin(Date.now()/120)*2,0,Math.PI*2);cx.stroke();cx.restore();}
   if(e.slow>0){cx.strokeStyle='rgba(192,132,252,0.9)';cx.lineWidth=3;cx.beginPath();cx.arc(e.x,e.y,e.sz+7,0,Math.PI*2);cx.stroke();}
   if(e.blueBuff>0){cx.strokeStyle='rgba(96,165,250,0.8)';cx.lineWidth=2;cx.beginPath();cx.arc(e.x,e.y,e.sz+5,0,Math.PI*2);cx.stroke();}
   cx.font=(e.sz*1.8)+'px serif';cx.textAlign='center';cx.textBaseline='middle';cx.fillText(e.ico,e.x,e.y);
@@ -1280,7 +1556,7 @@ function loop(ts){
   if(paused){enemies.forEach(drawEnemy);towers.forEach(drawTower);loopId=requestAnimationFrame(loop);return;}
   if(hotongOn){hotongT-=dt;if(hotongT<=0){hotongOn=false;hotongT=0;document.getElementById('hfx').style.display='none';}upd();}
   if(vacOn){vacT-=dt;if(vacT<=0){vacOn=false;vacT=0;document.getElementById('vfx').style.display='none';}upd();}
-  if(waveActive&&spawnQueue.length>0){spawnTimer+=dt;while(spawnQueue.length>0&&spawnTimer>=spawnQueue[0].delay)spawnOne(spawnQueue.shift().type);}
+  if(waveActive&&spawnQueue.length>0){spawnTimer+=dt;while(spawnQueue.length>0&&spawnTimer>=spawnQueue[0].delay){var sq=spawnQueue.shift();spawnOne(sq.type,sq.bossMode,sq.vip);}}
   for(var i=0;i<towers.length;i++)towers[i].debuffed=false;
   calcSynergies();
   checkSituHints();
@@ -1290,7 +1566,7 @@ function loop(ts){
     var sp=(e.slow>0?e.spd*0.4:e.spd)*dt/pl*10;
     e.t=Math.min(e.t+sp,1);
     var pt=ptAt(e.t);e.x=pt.x;e.y=pt.y;
-    if(e.t>=1){hp-=e.dmg;enemies.splice(i,1);statCurCombo=0;playSound('hp');upd();if(hp<=0){showGameOver();return;}continue;}
+    if(e.t>=1){hp-=e.dmg;if(e.vip){hp-=5;vipEnemy=null;floatText(W/2,H*0.4,'👔 VIP 민원 미처리! 시청 -5','#f87171',22,{life:80,vy:-0.4,bold:true});shake(8,15);}enemies.splice(i,1);statCurCombo=0;satisfaction=Math.max(0,satisfaction-8);playSound('hp');upd();if(hp<=0){showGameOver();return;}continue;}
     if(e.slow>0)e.slow-=dt;
     for(var j=0;j<towers.length;j++){if(towers[j].lvl===2&&Math.hypot(towers[j].x-e.x,towers[j].y-e.y)<=TLEVELS[2].range)e.slow=Math.max(e.slow,60);}
     if(e.ico==='😡'){var cl=null,cd2=100;for(var j=0;j<towers.length;j++){var d2=Math.hypot(towers[j].x-e.x,towers[j].y-e.y);if(d2<cd2){cd2=d2;cl=towers[j];}}if(cl)cl.debuffed=true;}
@@ -1400,6 +1676,20 @@ function loop(ts){
         e.destroyCooldown=180;
       }
     }
+    // 👑 보스전 패턴
+    if(e.bossMode){
+      var hpR=e.hp/e.maxHp;
+      if(e.phase===0&&hpR<=0.7){e.phase=1;shake(10,20);playSound('hotong');floatText(e.x,e.y-60,'😡 "본회의 소집!" — 전 타워 마비!','#fbbf24',16,{life:90,vy:-0.4,bold:true});for(var j=0;j<towers.length;j++)towers[j].paralyzed=150;}
+      if(e.phase===1&&hpR<=0.4){e.phase=2;shake(14,25);playSound('destroy');floatText(e.x,e.y-60,'💢 "예산 전액 삭감!" — 타워 3개 철거!','#f87171',16,{life:90,vy:-0.4,bold:true});var cnt2=0;for(var j=towers.length-1;j>=0&&cnt2<3;j--){if(towers[j].lvl<3){destroyTower(towers[j]);cnt2++;}}}
+      if(e.phase===2&&hpR<=0.1){e.phase=3;shake(18,40);playSound('hotong');floatText(e.x,e.y-60,'🔥 광폭화!! 속도 2배!','#ef4444',20,{life:100,vy:-0.3,bold:true});e.baseSpd*=2;e.spd=e.baseSpd;}
+      // 보스 체력바 (상단 대형)
+      cx.save();var bw=Math.min(W*0.6,420),bx=W/2-bw/2,by=(isMobile()?60:78);
+      cx.fillStyle='rgba(0,0,0,0.6)';cx.fillRect(bx-3,by-3,bw+6,18);
+      cx.fillStyle='#331111';cx.fillRect(bx,by,bw,12);
+      cx.fillStyle=e.phase>=3?'#ef4444':e.phase>=2?'#f97316':'#fbbf24';cx.fillRect(bx,by,bw*hpR,12);
+      [0.7,0.4,0.1].forEach(function(m){cx.fillStyle='#fff';cx.fillRect(bx+bw*m-1,by-2,2,16);});
+      cx.font='bold 11px sans-serif';cx.fillStyle='#fde68a';cx.textAlign='center';cx.textBaseline='bottom';cx.fillText('👑 시의장 '+Math.ceil(hpR*100)+'%',W/2,by-4);cx.restore();
+    }
     if(e.blueBuff>0){e.blueBuff-=dt;if(e.baseSpd)e.spd=e.baseSpd*1.4;}
     else if(e.baseSpd&&e.spd!==e.baseSpd&&!e.slow){e.spd=e.baseSpd;}
     drawEnemy(e);
@@ -1410,13 +1700,13 @@ function loop(ts){
     if(t.paralyzed>0){t.paralyzed-=dt;drawTower(t);continue;} // 자생단체 마비 중
     t.cd=Math.max(0,t.cd-dt);drawTower(t);if(t.cd>0)continue;
     var tl=TLEVELS[t.lvl],tgt=null,best=-1;
-    for(var j=0;j<enemies.length;j++)if(Math.hypot(enemies[j].x-t.x,enemies[j].y-t.y)<=tl.range*scl()&&enemies[j].t>best){best=enemies[j].t;tgt=enemies[j];}
+    for(var j=0;j<enemies.length;j++)if(Math.hypot(enemies[j].x-t.x,enemies[j].y-t.y)<=tl.range*scl()*perks.range&&enemies[j].t>best){best=enemies[j].t;tgt=enemies[j];}
     if(!tgt)continue;
-    t.cd=tl.rate*(t.rateSyn||1)*rb*(t.debuffed?1.4:1)*(evFestival?2.0:1);
-    var dmgMul=db*(t.dmgSyn||1)*(t.atkBoost||1);
+    t.cd=tl.rate*perks.rate*(t.rateSyn||1)*rb*(t.debuffed?1.4:1)*(evFestival?2.0:1);
+    var dmgMul=db*perks.dmg*(t.dmgSyn||1)*(t.atkBoost||1);
     if(t.lvl===3&&(tgt.ico==='👿'||tgt.ico==='🎩'||tgt.red||tgt.blue))dmgMul*=(tl.counterDmg||3);
     var slowMul=t.slowSyn||1;
-    var tRange=tl.range*scl()*(t.rangeBoost?((tl.range+t.rangeBoost)/tl.range):1);
+    var tRange=tl.range*scl()*perks.range*(t.rangeBoost?((tl.range+t.rangeBoost)/tl.range):1);
     var tgt2=null,best2=-1;
     for(var j=0;j<enemies.length;j++)if(Math.hypot(enemies[j].x-t.x,enemies[j].y-t.y)<=tRange&&enemies[j].t>best2){best2=enemies[j].t;tgt2=enemies[j];}
     if(tgt2)tgt=tgt2;
@@ -1428,11 +1718,17 @@ function loop(ts){
     var p=projs[i];if(!p.tgt||p.tgt.hp<=0){projs.splice(i,1);continue;}
     var dx=p.tgt.x-p.x,dy=p.tgt.y-p.y,dist=Math.hypot(dx,dy);drawProj(p);
     if(dist<12){
+      // 크리티컬: 12% 확률 2배 데미지
+      var crit=Math.random()<perks.crit,dmg=crit?p.dmg*2:p.dmg;
       if(p.splash){
         boom(p.tgt.x,p.tgt.y,'#ff4444',12);boom(p.tgt.x,p.tgt.y,'#ffaa00',6);
-        for(var j=enemies.length-1;j>=0;j--)if(Math.hypot(enemies[j].x-p.tgt.x,enemies[j].y-p.tgt.y)<=p.splash){enemies[j].hp-=p.dmg;if(p.slowPow)enemies[j].slow=Math.max(enemies[j].slow,p.slowPow);if(enemies[j].hp<=0)killE(enemies[j]);}
+        if(crit)shake(5,8);
+        for(var j=enemies.length-1;j>=0;j--)if(Math.hypot(enemies[j].x-p.tgt.x,enemies[j].y-p.tgt.y)<=p.splash){enemies[j].hp-=dmg;if(p.slowPow)enemies[j].slow=Math.max(enemies[j].slow,p.slowPow);if(enemies[j].hp<=0)killE(enemies[j]);}
+        floatText(p.tgt.x,p.tgt.y-14,(crit?'💥 ':'')+Math.round(dmg),crit?'#fbbf24':'#ffb366',crit?16:11,{life:crit?40:28,vy:-1.6,bold:crit});
       } else {
-        boom(p.tgt.x,p.tgt.y,TLEVELS[p.tlvl].pc,6);p.tgt.hp-=p.dmg;if(p.slowPow)p.tgt.slow=Math.max(p.tgt.slow,p.slowPow);if(p.tgt.hp<=0)killE(p.tgt);
+        boom(p.tgt.x,p.tgt.y,TLEVELS[p.tlvl].pc,6);p.tgt.hp-=dmg;if(p.slowPow)p.tgt.slow=Math.max(p.tgt.slow,p.slowPow);
+        floatText(p.tgt.x+(Math.random()-0.5)*16,p.tgt.y-14,(crit?'💥 ':'')+Math.round(dmg),crit?'#fbbf24':'#fff',crit?16:10,{life:crit?40:26,vy:-1.6,bold:crit});
+        if(p.tgt.hp<=0)killE(p.tgt);
       }
       projs.splice(i,1);
     } else {var spd2=9*p.sp*Math.min(dt,2);p.px=p.x;p.py=p.y;p.x+=dx/dist*spd2;p.y+=dy/dist*spd2;}
@@ -1445,23 +1741,25 @@ function loop(ts){
     else{cx.fillStyle=p.col;cx.beginPath();cx.arc(p.x,p.y,p.sz/2,0,Math.PI*2);cx.fill();}
   }
   cx.globalAlpha=1;
+  drawVipHUD(dt);drawFloats(dt);drawComboHUD(dt);drawSatisfaction();applyShake(dt);
   if(waveActive&&spawnQueue.length===0&&enemies.length===0){
     waveActive=false;paused=false;
     var b=wave*30;money+=b;hp=MAX_HP;upd();setEvBanner(null);
-    playSound('clear');
+    playSound('clear');showStamp('처리완료');
+    if(wave===10)unlockAch('r10');if(wave===20)unlockAch('r20');
     document.getElementById('wave-btn').textContent='▶ 웨이브 시작';
     document.getElementById('pause-btn').disabled=true;
     document.getElementById('pause-btn').textContent='⏸ 일시정지';
     document.getElementById('pause-overlay').style.display='none';
     hint('🎉 Round '+wave+' 클리어! +'+b+'💰 ❤️ 체력 회복! 3초 후 다음 라운드...');
     previewNextWave();
-    setTimeout(function(){if(!waveActive)startWave();},3000);
+    setTimeout(function(){if(!waveActive)showDecree();},1500);
   }
   loopId=requestAnimationFrame(loop);
 }
 
 function showClear(){
-  waveActive=false;
+  waveActive=false;unlockAch('clear');showStamp('완전처리');
   var records=saveScore(true);
   document.getElementById('ov-title').textContent='🎉 창원시청 수호 완료!';
   document.getElementById('ov-body').textContent='30라운드를 모두 버텨냈습니다! 당신은 진정한 민원처리 달인!';
@@ -1494,6 +1792,7 @@ function showGameOver(){
 }
 
 initState();upd();
+(function(){try{var dk=JSON.parse(localStorage.getItem('cwTD_daily')||'{}'),k=todayKey();var el=document.getElementById('daily-best');if(dk[k])el.textContent='📅 오늘 최고: Round '+dk[k].wave+' · ⭐'+dk[k].score;else el.textContent='📅 오늘 아직 도전 안 함 — 모든 플레이어가 같은 맵·같은 이벤트!';}catch(e){}})();
 startLoop();
 </script>
 </body>
